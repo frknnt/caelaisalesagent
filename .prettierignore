@@ -1,0 +1,21 @@
+.next
+.next-*
+node_modules
+coverage
+playwright-report
+test-results
+next-env.d.ts
+docs/evidence/P0.4/screenshots
+docs/evidence/P0.1/screenshots
+docs/reference/*.pdf
+AGENTS.md
+docs/CAEL_AI_SALES_AGENT_YOL_HARITASI.md
+docs/CAEL_AI_SALES_AGENT_ILERELEME_NOTLARI.md
+docs/decisions/README.md
+docs/runbooks/README.md
+# Design-tool working files (installed skills and generated audit output)
+.claude
+.impeccable
+.taste-skill
+skills-lock.json
+tmp

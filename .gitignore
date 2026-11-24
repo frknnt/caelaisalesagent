@@ -1,0 +1,41 @@
+# dependencies
+/node_modules
+
+# next
+/.next
+/.next-*
+/out
+
+# testing
+/playwright-report
+/test-results
+/coverage
+
+# local environment
+.env
+.env.local
+.env.*.local
+
+# editors and OS
+.DS_Store
+Thumbs.db
+.idea
+.vscode
+
+# logs
+*.log
+npm-debug.log*
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# local Supabase state (configuration remains trackable when P0.2 creates it)
+/supabase/.branches
+/supabase/.temp
+
+# local test state (Playwright storageState holds session tokens)
+/tmp
+
+# design-tool scratch output
+/.taste-skill

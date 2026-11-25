@@ -20,6 +20,9 @@ export const widgetTestSecrets = `e2e:${createHash("sha256")
   .update("cael widget tokens, local end-to-end tests")
   .digest("base64url")}`;
 export const widgetTestIpHeader = "x-real-ip";
+export const knowledgeWorkerTestToken = createHash("sha256")
+  .update("cael knowledge worker, local end-to-end tests")
+  .digest("base64url");
 
 export const serverUrl = (name) => `http://127.0.0.1:${e2eServers[name].port}`;
 
@@ -74,5 +77,8 @@ export function serverEnvironment(name, supabase) {
     NEXT_TELEMETRY_DISABLED: "1",
     WIDGET_CLIENT_IP_HEADER: widgetTestIpHeader,
     WIDGET_TOKEN_SECRETS: widgetTestSecrets,
+    INGESTION_WORKER_TOKEN: knowledgeWorkerTestToken,
+    INGESTION_MALWARE_SCANNER_URL: "",
+    INGESTION_MALWARE_SCANNER_TOKEN: "",
   };
 }

@@ -29,6 +29,17 @@ Postgres şemasından üretilen TypeScript sözleşmesidir.
   kabul etmez.
 - `llm_call_metrics`: sağlayıcı denemesi başına token, süre ve maliyet. Yalnız
   service role ekler, owner/admin okur; fatura defteri değildir.
+- `knowledge_sources` / `knowledge_versions`: tenant + site kapsamlı kaynak ve
+  immutable içerik sürümü; görünür durum `pending/processing/ready/failed`.
+- `documents` / `chunks`: çıkarılan dokümanlar ve deterministic parçalar. Chunk
+  PII türleri ile fiyat satırı numaralarını taşır.
+- `ingestion_jobs`: idempotent PGMQ worker işi, attempt/progress/error code ve
+  poison durumunu taşır; ham içerik taşımaz.
+
+`knowledge-sources` Storage bucket'ı private, 25 MiB ve PDF/DOCX/TXT/CSV/XLSX
+MIME allowlist'lidir. Obje yolu organization/site/content-hash ile başlar;
+Storage RLS path tenant anahtarını canlı membership ve site FK'sine karşı
+doğrular. Queue consumer ve retention RPC'leri yalnız `service_role` içindir.
 
 Authorization `raw_user_meta_data` veya bayat kalabilen JWT organization
 claim'lerinden değil, her sorguda canlı `memberships` tablosundan hesaplanır.

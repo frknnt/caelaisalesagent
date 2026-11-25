@@ -6,6 +6,7 @@ export const hostPort: number;
 export function hostUrl(name: string): string;
 export const widgetTestSecrets: string;
 export const widgetTestIpHeader: string;
+export const knowledgeWorkerTestToken: string;
 export function serverUrl(name: ServerName): string;
 export function readLocalSupabase(): {
   NEXT_PUBLIC_SUPABASE_URL: string;

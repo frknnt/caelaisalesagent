@@ -8,3 +8,4 @@ Her kayit en az baglam, karar, alternatifler, sonuclar, riskler ve geri alma yol
 - `ADR-20261121-auth-rbac-ve-tenant-context.md`
 - `ADR-20261124-test-harness-ve-observability.md`
 - `ADR-20261124-widget-embed-domain-kilidi-ve-public-session.md`
+- `ADR-20261125-knowledge-ingestion-ve-kuyruk.md`

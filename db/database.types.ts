@@ -80,6 +80,167 @@ export type Database = {
           },
         ];
       };
+      chunks: {
+        Row: {
+          content: string;
+          content_sha256: string;
+          created_at: string;
+          document_id: string;
+          has_price: boolean;
+          id: string;
+          ordinal: number;
+          organization_id: string;
+          pii_types: string[];
+          price_line_numbers: number[];
+          site_id: string;
+          source_id: string;
+          version_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          content: string;
+          content_sha256: string;
+          created_at?: string;
+          document_id: string;
+          has_price?: boolean;
+          id?: string;
+          ordinal: number;
+          organization_id: string;
+          pii_types?: string[];
+          price_line_numbers?: number[];
+          site_id: string;
+          source_id: string;
+          version_id: string;
+        };
+        Update: {
+          content?: string;
+          content_sha256?: string;
+          created_at?: string;
+          document_id?: string;
+          has_price?: boolean;
+          id?: string;
+          ordinal?: number;
+          organization_id?: string;
+          pii_types?: string[];
+          price_line_numbers?: number[];
+          site_id?: string;
+          source_id?: string;
+          version_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "chunks_organization_id_document_id_fkey";
+            columns: ["organization_id", "document_id"];
+            isOneToOne: false;
+            referencedRelation: "documents";
+            referencedColumns: ["organization_id", "id"];
+          },
+          {
+            foreignKeyName: "chunks_organization_id_site_id_fkey";
+            columns: ["organization_id", "site_id"];
+            isOneToOne: false;
+            referencedRelation: "sites";
+            referencedColumns: ["organization_id", "id"];
+          },
+          {
+            foreignKeyName: "chunks_organization_id_source_id_fkey";
+            columns: ["organization_id", "source_id"];
+            isOneToOne: false;
+            referencedRelation: "knowledge_sources";
+            referencedColumns: ["organization_id", "id"];
+          },
+          {
+            foreignKeyName: "chunks_organization_id_version_id_fkey";
+            columns: ["organization_id", "version_id"];
+            isOneToOne: false;
+            referencedRelation: "knowledge_versions";
+            referencedColumns: ["organization_id", "id"];
+          },
+        ];
+      };
+      documents: {
+        Row: {
+          byte_size: number;
+          canonical_url: string | null;
+          content_sha256: string;
+          created_at: string;
+          id: string;
+          malware_status: string;
+          mime_type: string;
+          organization_id: string;
+          raw_delete_claimed_at: string | null;
+          raw_deleted_at: string | null;
+          raw_retention_until: string | null;
+          site_id: string;
+          source_id: string;
+          storage_bucket: string | null;
+          storage_path: string | null;
+          title: string;
+          version_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          byte_size: number;
+          canonical_url?: string | null;
+          content_sha256: string;
+          created_at?: string;
+          id?: string;
+          malware_status?: string;
+          mime_type: string;
+          organization_id: string;
+          raw_delete_claimed_at?: string | null;
+          raw_deleted_at?: string | null;
+          raw_retention_until?: string | null;
+          site_id: string;
+          source_id: string;
+          storage_bucket?: string | null;
+          storage_path?: string | null;
+          title: string;
+          version_id: string;
+        };
+        Update: {
+          byte_size?: number;
+          canonical_url?: string | null;
+          content_sha256?: string;
+          created_at?: string;
+          id?: string;
+          malware_status?: string;
+          mime_type?: string;
+          organization_id?: string;
+          raw_delete_claimed_at?: string | null;
+          raw_deleted_at?: string | null;
+          raw_retention_until?: string | null;
+          site_id?: string;
+          source_id?: string;
+          storage_bucket?: string | null;
+          storage_path?: string | null;
+          title?: string;
+          version_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "documents_organization_id_site_id_fkey";
+            columns: ["organization_id", "site_id"];
+            isOneToOne: false;
+            referencedRelation: "sites";
+            referencedColumns: ["organization_id", "id"];
+          },
+          {
+            foreignKeyName: "documents_organization_id_source_id_fkey";
+            columns: ["organization_id", "source_id"];
+            isOneToOne: false;
+            referencedRelation: "knowledge_sources";
+            referencedColumns: ["organization_id", "id"];
+          },
+          {
+            foreignKeyName: "documents_organization_id_version_id_fkey";
+            columns: ["organization_id", "version_id"];
+            isOneToOne: false;
+            referencedRelation: "knowledge_versions";
+            referencedColumns: ["organization_id", "id"];
+          },
+        ];
+      };
       domains: {
         Row: {
           allow_subdomains: boolean;
@@ -130,6 +291,228 @@ export type Database = {
             columns: ["organization_id", "site_id"];
             isOneToOne: false;
             referencedRelation: "sites";
+            referencedColumns: ["organization_id", "id"];
+          },
+        ];
+      };
+      ingestion_jobs: {
+        Row: {
+          attempt_count: number;
+          created_at: string;
+          finished_at: string | null;
+          id: string;
+          idempotency_key: string;
+          last_error_code: string | null;
+          max_attempts: number;
+          next_attempt_at: string | null;
+          organization_id: string;
+          progress: number;
+          queue_message_id: number | null;
+          site_id: string;
+          source_id: string;
+          started_at: string | null;
+          status: string;
+          updated_at: string;
+          version_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          attempt_count?: number;
+          created_at?: string;
+          finished_at?: string | null;
+          id?: string;
+          idempotency_key: string;
+          last_error_code?: string | null;
+          max_attempts?: number;
+          next_attempt_at?: string | null;
+          organization_id: string;
+          progress?: number;
+          queue_message_id?: number | null;
+          site_id: string;
+          source_id: string;
+          started_at?: string | null;
+          status?: string;
+          updated_at?: string;
+          version_id: string;
+        };
+        Update: {
+          attempt_count?: number;
+          created_at?: string;
+          finished_at?: string | null;
+          id?: string;
+          idempotency_key?: string;
+          last_error_code?: string | null;
+          max_attempts?: number;
+          next_attempt_at?: string | null;
+          organization_id?: string;
+          progress?: number;
+          queue_message_id?: number | null;
+          site_id?: string;
+          source_id?: string;
+          started_at?: string | null;
+          status?: string;
+          updated_at?: string;
+          version_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "ingestion_jobs_organization_id_site_id_fkey";
+            columns: ["organization_id", "site_id"];
+            isOneToOne: false;
+            referencedRelation: "sites";
+            referencedColumns: ["organization_id", "id"];
+          },
+          {
+            foreignKeyName: "ingestion_jobs_organization_id_source_id_fkey";
+            columns: ["organization_id", "source_id"];
+            isOneToOne: false;
+            referencedRelation: "knowledge_sources";
+            referencedColumns: ["organization_id", "id"];
+          },
+          {
+            foreignKeyName: "ingestion_jobs_organization_id_version_id_fkey";
+            columns: ["organization_id", "version_id"];
+            isOneToOne: false;
+            referencedRelation: "knowledge_versions";
+            referencedColumns: ["organization_id", "id"];
+          },
+        ];
+      };
+      knowledge_sources: {
+        Row: {
+          canonical_url: string | null;
+          created_at: string;
+          created_by: string;
+          current_version_id: string | null;
+          id: string;
+          latest_error_code: string | null;
+          name: string;
+          organization_id: string;
+          progress: number;
+          site_id: string;
+          source_key: string;
+          source_type: string;
+          status: string;
+          updated_at: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          canonical_url?: string | null;
+          created_at?: string;
+          created_by: string;
+          current_version_id?: string | null;
+          id?: string;
+          latest_error_code?: string | null;
+          name: string;
+          organization_id: string;
+          progress?: number;
+          site_id: string;
+          source_key: string;
+          source_type: string;
+          status?: string;
+          updated_at?: string;
+        };
+        Update: {
+          canonical_url?: string | null;
+          created_at?: string;
+          created_by?: string;
+          current_version_id?: string | null;
+          id?: string;
+          latest_error_code?: string | null;
+          name?: string;
+          organization_id?: string;
+          progress?: number;
+          site_id?: string;
+          source_key?: string;
+          source_type?: string;
+          status?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "knowledge_sources_created_by_fkey";
+            columns: ["created_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "knowledge_sources_current_version_fkey";
+            columns: ["organization_id", "current_version_id"];
+            isOneToOne: false;
+            referencedRelation: "knowledge_versions";
+            referencedColumns: ["organization_id", "id"];
+          },
+          {
+            foreignKeyName: "knowledge_sources_organization_id_site_id_fkey";
+            columns: ["organization_id", "site_id"];
+            isOneToOne: false;
+            referencedRelation: "sites";
+            referencedColumns: ["organization_id", "id"];
+          },
+        ];
+      };
+      knowledge_versions: {
+        Row: {
+          content_sha256: string;
+          created_at: string;
+          created_by: string;
+          extracted_at: string | null;
+          id: string;
+          input_text: string | null;
+          organization_id: string;
+          site_id: string;
+          source_id: string;
+          status: string;
+          version_number: number;
+        };
+        ComputedFields: never;
+        Insert: {
+          content_sha256: string;
+          created_at?: string;
+          created_by: string;
+          extracted_at?: string | null;
+          id?: string;
+          input_text?: string | null;
+          organization_id: string;
+          site_id: string;
+          source_id: string;
+          status?: string;
+          version_number: number;
+        };
+        Update: {
+          content_sha256?: string;
+          created_at?: string;
+          created_by?: string;
+          extracted_at?: string | null;
+          id?: string;
+          input_text?: string | null;
+          organization_id?: string;
+          site_id?: string;
+          source_id?: string;
+          status?: string;
+          version_number?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "knowledge_versions_created_by_fkey";
+            columns: ["created_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "knowledge_versions_organization_id_site_id_fkey";
+            columns: ["organization_id", "site_id"];
+            isOneToOne: false;
+            referencedRelation: "sites";
+            referencedColumns: ["organization_id", "id"];
+          },
+          {
+            foreignKeyName: "knowledge_versions_organization_id_source_id_fkey";
+            columns: ["organization_id", "source_id"];
+            isOneToOne: false;
+            referencedRelation: "knowledge_sources";
             referencedColumns: ["organization_id", "id"];
           },
         ];
@@ -596,6 +979,34 @@ export type Database = {
           site_id: string;
         }[];
       };
+      claim_expired_knowledge_files: {
+        Args: { p_limit?: number };
+        Returns: {
+          document_id: string;
+          storage_bucket: string;
+          storage_path: string;
+        }[];
+      };
+      claim_ingestion_job: {
+        Args: { p_visibility_seconds?: number };
+        Returns: {
+          attempt_count: number;
+          canonical_url: string;
+          input_text: string;
+          job_id: string;
+          max_attempts: number;
+          message_id: number;
+          organization_id: string;
+          site_id: string;
+          source_id: string;
+          source_type: string;
+          version_id: string;
+        }[];
+      };
+      complete_ingestion_job: {
+        Args: { p_job_id: string; p_message_id: number };
+        Returns: undefined;
+      };
       create_organization_invitation: {
         Args: {
           p_email: string;
@@ -663,6 +1074,35 @@ export type Database = {
           site_id: string;
         }[];
       };
+      enqueue_knowledge_source: {
+        Args: {
+          p_canonical_url?: string;
+          p_content_sha256: string;
+          p_input_text?: string;
+          p_max_attempts?: number;
+          p_name: string;
+          p_organization_id: string;
+          p_site_id: string;
+          p_source_key: string;
+          p_source_type: string;
+        };
+        Returns: {
+          is_duplicate: boolean;
+          job_id: string;
+          source_id: string;
+          version_id: string;
+        }[];
+      };
+      fail_ingestion_job: {
+        Args: {
+          p_error_code: string;
+          p_job_id: string;
+          p_message_id: number;
+          p_retry_delay_seconds?: number;
+          p_retryable: boolean;
+        };
+        Returns: string;
+      };
       get_authorization_context: {
         Args: Record<PropertyKey, never>;
         Returns: {
@@ -671,6 +1111,10 @@ export type Database = {
           organization_slug: string;
           role: string;
         }[];
+      };
+      mark_knowledge_file_deleted: {
+        Args: { p_document_id: string };
+        Returns: undefined;
       };
       purge_widget_runtime: {
         Args: Record<PropertyKey, never>;
@@ -683,11 +1127,16 @@ export type Database = {
         Args: { p_organization_id: string; p_user_id: string };
         Returns: undefined;
       };
+      retry_ingestion_job: { Args: { p_job_id: string }; Returns: number };
       revoke_organization_invitation: {
         Args: { p_invitation_id: string };
         Returns: undefined;
       };
       revoke_site_key: { Args: { p_key_id: string }; Returns: undefined };
+      update_ingestion_progress: {
+        Args: { p_job_id: string; p_progress: number };
+        Returns: undefined;
+      };
       widget_bootstrap: {
         Args: {
           p_client_hash: string;

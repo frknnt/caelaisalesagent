@@ -37,6 +37,10 @@ Aktif server endpoint'leri:
 
 - `/api/health`: server-side env sözleşmesi kontrolü
 - `/api/tenant-context`: doğrulanmış tenant bağlamı
+- `/app/knowledge`: tenant-safe site, URL, metin, SSS ve private dosya
+  kaynakları
+- `/api/internal/ingestion`: server-only PGMQ worker (bearer token zorunlu)
+- `/api/internal/ingestion/retention`: süresi dolan ham dosyaları temizler
 - `/api/organizations/[organizationId]/context`: organizasyon bağlamı
 - `/auth/callback`: Supabase auth callback'i
 - `/widget/v1/loader.js`, `/widget/v1/frame`,

@@ -67,9 +67,11 @@ jobs:
       # A new network namespace has no interface at all, so this also catches
       # anything that gets around the guard inside the test process.
       - name: Unit and component tests without a network
-        run: >-
-          sudo unshare --net -- sudo --user "$USER" env "PATH=$PATH" "CI=true"
-          npm test
+        run: |
+          sudo unshare --net -- bash -c '
+            ip link set lo up
+            exec sudo --user "$1" env "PATH=$2" "CI=true" npm test
+          ' -- "$USER" "$PATH"
 
       - name: Prove a failing test returns non-zero and leaves evidence
         run: npm run test:failure-proof

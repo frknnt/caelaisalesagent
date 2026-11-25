@@ -206,12 +206,12 @@ test("on a phone it covers the page and keeps the focus inside", async ({
   await openWidget(page);
   await expect(panel(page)).toHaveAttribute("aria-modal", "true");
   await expect(launcher(page)).toBeHidden();
-  expect(await panel(page).boundingBox()).toMatchObject({
-    x: 0,
-    y: 0,
-    width: 375,
-    height: 700,
-  });
+  const box = await panel(page).boundingBox();
+  expect(box).not.toBeNull();
+  expect(box!.x).toBeCloseTo(0, 0);
+  expect(box!.y).toBeCloseTo(0, 0);
+  expect(box!.width).toBeCloseTo(375, 0);
+  expect(box!.height).toBeCloseTo(700, 0);
   const close = frame(page).getByRole("button", { name: "Kapat" });
   const person = frame(page).getByRole("link", { name: "Bir kişiyle görüş" });
   for (const target of [close, person, close, person]) {

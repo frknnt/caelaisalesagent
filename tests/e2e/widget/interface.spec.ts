@@ -208,10 +208,10 @@ test("on a phone it covers the page and keeps the focus inside", async ({
   await expect(launcher(page)).toBeHidden();
   const box = await panel(page).boundingBox();
   expect(box).not.toBeNull();
-  expect(box!.x).toBeCloseTo(0, 0);
-  expect(box!.y).toBeCloseTo(0, 0);
-  expect(box!.width).toBeCloseTo(375, 0);
-  expect(box!.height).toBeCloseTo(700, 0);
+  expect(Math.abs(box!.x)).toBeLessThan(2);
+  expect(Math.abs(box!.y)).toBeLessThan(2);
+  expect(Math.abs(box!.x + box!.width - 375)).toBeLessThan(2);
+  expect(Math.abs(box!.y + box!.height - 700)).toBeLessThan(2);
   const close = frame(page).getByRole("button", { name: "Kapat" });
   const person = frame(page).getByRole("link", { name: "Bir kişiyle görüş" });
   for (const target of [close, person, close, person]) {

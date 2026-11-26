@@ -126,6 +126,8 @@ set
   email_change_token_new = coalesce(email_change_token_new, ''),
   email_change_token_current = coalesce(email_change_token_current, ''),
   email_change = coalesce(email_change, ''),
+  phone_change = coalesce(phone_change, ''),
+  phone_change_token = coalesce(phone_change_token, ''),
   reauthentication_token = coalesce(reauthentication_token, '')
 where email like '%@example.test';
 

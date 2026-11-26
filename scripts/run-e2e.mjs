@@ -24,6 +24,35 @@ function run(script, scriptArgs, env) {
 }
 
 const supabase = readLocalSupabase();
+
+// The suite needs a stack seeded from the current supabase/seed.sql. A stack
+// seeded by an older seed (NULL GoTrue token columns, users without a
+// password) fails every sign-in test with a misleading 500/400. Fail fast with
+// the real reason instead. CI starts a fresh stack; locally, start one with
+// `supabase start --workdir <dir>` and pass E2E_SUPABASE_WORKDIR=<dir>.
+const seedProbe = await fetch(
+  `${supabase.NEXT_PUBLIC_SUPABASE_URL}/auth/v1/token?grant_type=password`,
+  {
+    method: "POST",
+    headers: {
+      apikey: supabase.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
+      "content-type": "application/json",
+    },
+    body: JSON.stringify({
+      email: "owner-a@example.test",
+      password: "CaelTest!2026",
+    }),
+  },
+).catch((error) => ({ ok: false, status: String(error) }));
+if (!seedProbe.ok) {
+  console.error(
+    `E2E preflight: the seed user cannot sign in (status ${seedProbe.status}). ` +
+      "This stack was not seeded from the current supabase/seed.sql. Run the " +
+      "suite on a fresh stack via E2E_SUPABASE_WORKDIR (see README).",
+  );
+  process.exit(1);
+}
+
 rmSync(resolve(root, "test-results/server"), { force: true, recursive: true });
 
 if (!skipBuild) {

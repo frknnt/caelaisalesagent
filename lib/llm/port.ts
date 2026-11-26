@@ -1,12 +1,30 @@
 import type { LlmTokenUsage } from "@/lib/observability/llm-metrics";
 
 /**
- * Provider-neutral boundary. P1.3 adds the real adapter and the agent loop;
- * this file only fixes what callers may rely on.
+ * Provider-neutral boundary. Business logic (the agent loop, tools, budget)
+ * depends only on these types; a provider adapter translates them.
  */
-export interface LlmMessage {
-  role: "system" | "user" | "assistant";
-  content: string;
+export interface LlmToolCall {
+  id: string;
+  name: string;
+  /** Parsed JSON arguments. Untrusted until the tool registry validates them. */
+  arguments: unknown;
+}
+
+export type LlmMessage =
+  | { role: "system" | "user"; content: string }
+  | {
+      role: "assistant";
+      content: string;
+      toolCalls?: readonly LlmToolCall[];
+    }
+  | { role: "tool"; toolCallId: string; name: string; content: string };
+
+/** JSON Schema subset that every adapter can express. */
+export interface LlmToolSpec {
+  name: string;
+  description: string;
+  parameters: Readonly<Record<string, unknown>>;
 }
 
 export interface LlmRequest {
@@ -14,11 +32,13 @@ export interface LlmRequest {
   purpose: string;
   messages: readonly LlmMessage[];
   maxOutputTokens: number;
+  tools?: readonly LlmToolSpec[];
 }
 
 export interface LlmCompletion {
-  finish: "stop" | "refusal" | "length";
+  finish: "stop" | "refusal" | "length" | "tool_calls";
   text: string;
+  toolCalls?: readonly LlmToolCall[];
   usage: LlmTokenUsage;
 }
 

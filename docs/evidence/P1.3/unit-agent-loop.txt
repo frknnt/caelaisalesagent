@@ -1,0 +1,44 @@
+ ✓ |unit| tests/unit/llm-guarded-call.test.ts > callLlmGuarded: success > returns the completion, runs the effect once and records cost, latency and tokens 10ms
+ ✓ |unit| tests/unit/llm-guarded-call.test.ts > callLlmGuarded: success > is deterministic: the same script gives the same result 1ms
+ ✓ |unit| tests/unit/llm-guarded-call.test.ts > callLlmGuarded: success > keeps the answer when the metric store fails, and logs the failure 5ms
+ ✓ |unit| tests/unit/llm-guarded-call.test.ts > callLlmGuarded: failures hand off without side effects > timeout: gives up at the limit and aborts the provider 2ms
+ ✓ |unit| tests/unit/llm-guarded-call.test.ts > callLlmGuarded: failures hand off without side effects > timeout: discards an answer that ignores the abort and arrives late 1ms
+ ✓ |unit| tests/unit/llm-guarded-call.test.ts > callLlmGuarded: failures hand off without side effects > refusal: hides the model output and still records the tokens used 1ms
+ ✓ |unit| tests/unit/llm-guarded-call.test.ts > callLlmGuarded: failures hand off without side effects > rate limit: reports the retry delay and does not retry by itself 1ms
+ ✓ |unit| tests/unit/llm-guarded-call.test.ts > callLlmGuarded: failures hand off without side effects > provider outage 1ms
+ ✓ |unit| tests/unit/llm-guarded-call.test.ts > callLlmGuarded: failures hand off without side effects > blank output 1ms
+ ✓ |unit| tests/unit/llm-guarded-call.test.ts > callLlmGuarded: failures hand off without side effects > invalid provider response: cut-off output 1ms
+ ✓ |unit| tests/unit/llm-guarded-call.test.ts > callLlmGuarded: failures hand off without side effects > invalid provider response: negative token counts 0ms
+ ✓ |unit| tests/unit/llm-guarded-call.test.ts > callLlmGuarded: failures hand off without side effects > invalid provider response: more cached than total input 1ms
+ ✓ |unit| tests/unit/llm-guarded-call.test.ts > callLlmGuarded: failures hand off without side effects > unexpected provider error: falls back and logs no message text 1ms
+ ✓ |unit| tests/unit/llm-guarded-call.test.ts > callLlmGuarded: budget > does not call the provider when the worst case exceeds the budget 1ms
+ ✓ |unit| tests/unit/llm-guarded-call.test.ts > callLlmGuarded: budget > calls the provider when the worst case equals the budget 2ms
+ ✓ |unit| tests/unit/llm-guarded-call.test.ts > callLlmGuarded: budget > fails closed when the price or the input size is unknown 1ms
+ ✓ |unit| tests/unit/llm-guarded-call.test.ts > callLlmGuarded: logs > never contain message content on any path 2ms
+ ✓ |unit| tests/unit/agent-loop.test.ts > agent turn: prompt injection > keeps visitor text out of the system prompt and neutralises wrapper tags 8ms
+ ✓ |unit| tests/unit/agent-loop.test.ts > agent turn: prompt injection > does not run a tool the injected text asks for 1ms
+ ✓ |unit| tests/unit/agent-loop.test.ts > agent turn: tool hallucination and invalid schema > rejects an unknown tool, feeds back the error, then hands off on repeat 2ms
+ ✓ |unit| tests/unit/agent-loop.test.ts > agent turn: tool hallucination and invalid schema > does not execute a call with extra field 1ms
+ ✓ |unit| tests/unit/agent-loop.test.ts > agent turn: tool hallucination and invalid schema > does not execute a call with wrong type 1ms
+ ✓ |unit| tests/unit/agent-loop.test.ts > agent turn: tool hallucination and invalid schema > does not execute a call with missing field 1ms
+ ✓ |unit| tests/unit/agent-loop.test.ts > agent turn: tool hallucination and invalid schema > does not execute a call with too long 0ms
+ ✓ |unit| tests/unit/agent-loop.test.ts > agent turn: tool hallucination and invalid schema > does not execute a call with not an object 0ms
+ ✓ |unit| tests/unit/agent-loop.test.ts > agent turn: tool hallucination and invalid schema > runs a valid read-only tool and passes the server result back 1ms
+ ✓ |unit| tests/unit/agent-loop.test.ts > agent turn: tool hallucination and invalid schema > stops at the step limit instead of looping forever 1ms
+ ✓ |unit| tests/unit/agent-loop.test.ts > agent turn: side effects are deferred and idempotent > runs a side-effect tool once, only after the answer is accepted 2ms
+ ✓ |unit| tests/unit/agent-loop.test.ts > agent turn: side effects are deferred and idempotent > drops the queued side effect when the turn ends in a refusal 1ms
+ ✓ |unit| tests/unit/agent-loop.test.ts > agent turn: timeout and refusal > hands off with safe text after timeouts and retries only transient failures 216ms
+ ✓ |unit| tests/unit/agent-loop.test.ts > agent turn: timeout and refusal > does not retry a refusal and never returns model text 2ms
+ ✓ |unit| tests/unit/agent-loop.test.ts > agent turn: timeout and refusal > recovers from one rate limit with a retry 1ms
+ ✓ |unit| tests/unit/agent-loop.test.ts > agent turn: timeout and refusal > opens the circuit after repeated outages and stops calling the provider 1ms
+ ✓ |unit| tests/unit/agent-loop.test.ts > agent turn: budget and emergency stop > does not call the LLM when the daily budget is spent 1ms
+ ✓ |unit| tests/unit/agent-loop.test.ts > agent turn: budget and emergency stop > does not call the LLM when the remaining budget is below the worst case 1ms
+ ✓ |unit| tests/unit/agent-loop.test.ts > agent turn: budget and emergency stop > fails closed when the spend cannot be read 1ms
+ ✓ |unit| tests/unit/agent-loop.test.ts > agent turn: budget and emergency stop > emergency stop blocks every call 1ms
+ ✓ |unit| tests/unit/agent-loop.test.ts > agent turn: budget and emergency stop > logs tokens, cost and latency per call without message text 1ms
+ ✓ |unit| tests/unit/agent-loop.test.ts > provider independence > switching provider and model is config only; the turn result is identical 2ms
+ ✓ |unit| tests/unit/agent-loop.test.ts > provider independence > rejects an unregistered provider instead of silently using a fake 2ms
+ ✓ |unit| tests/unit/agent-loop.test.ts > provider independence > fails closed on invalid env and defaults to no budget and no price 1ms
+ ✓ |unit| tests/unit/agent-loop.test.ts > conversation window and knowledge tool > keeps the newest turns, starts on a visitor turn and wraps the summary as data 2ms
+ ✓ |unit| tests/unit/agent-loop.test.ts > conversation window and knowledge tool > scopes retrieval to the server-side tenant, ignoring model arguments 1ms
+      Tests  43 passed (43)

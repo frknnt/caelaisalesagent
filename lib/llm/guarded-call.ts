@@ -90,6 +90,11 @@ function classify(completion: LlmCompletion): Attempt {
   if (completion.finish === "refusal") {
     return failure("refusal", completion.usage);
   }
+  if (completion.finish === "tool_calls") {
+    return completion.toolCalls?.length
+      ? { outcome: "completed", completion }
+      : failure("invalid_output", completion.usage);
+  }
   if (completion.finish !== "stop" || completion.text.trim() === "") {
     return failure("invalid_output", completion.usage);
   }

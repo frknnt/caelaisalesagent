@@ -6,11 +6,19 @@ import {
 } from "@/lib/llm/port";
 
 export type FakeLlmStep =
-  | { kind: "answer"; text: string; delayMs?: number }
+  | {
+      kind: "answer";
+      text: string;
+      delayMs?: number;
+    }
   | { kind: "refusal" }
   | { kind: "rate_limited"; retryAfterMs: number }
   | { kind: "unavailable" }
   | { kind: "malformed" }
+  | {
+      kind: "tool_call";
+      calls: readonly { id: string; name: string; arguments: unknown }[];
+    }
   /** Waits for the abort. With `lateAnswerMs` it ignores it and answers. */
   | { kind: "hang"; lateAnswerMs?: number };
 
@@ -30,13 +38,15 @@ function wait(ms: number, signal?: AbortSignal) {
 
 /** Plays its steps in order, without a network, a clock or randomness. */
 export class FakeLlm implements LlmPort {
-  readonly provider = "fake";
-  readonly model = "fake-model-1";
   readonly isSimulated = true;
   readonly calls: LlmRequest[] = [];
   private readonly steps: FakeLlmStep[];
 
-  constructor(steps: readonly FakeLlmStep[]) {
+  constructor(
+    steps: readonly FakeLlmStep[],
+    readonly provider = "fake",
+    readonly model = "fake-model-1",
+  ) {
     this.steps = [...steps];
   }
 
@@ -76,6 +86,8 @@ export class FakeLlm implements LlmPort {
         return completion("refusal", "");
       case "malformed":
         return completion("stop", "   ");
+      case "tool_call":
+        return { ...completion("tool_calls", ""), toolCalls: step.calls };
       case "rate_limited":
         throw new LlmProviderError("rate_limited", step.retryAfterMs);
       case "unavailable":

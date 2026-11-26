@@ -5,10 +5,10 @@ Bu dosya, bu repository ile acilan her yeni sohbetin sabit baslangic talimatidir
 ## Her sohbetin basinda
 
 1. Bu dosyayi tamamen oku.
-2. `docs/CAEL_AI_SALES_AGENT_YOL_HARITASI.md` dosyasini tamamen oku.
-3. `docs/CAEL_AI_SALES_AGENT_ILERELEME_NOTLARI.md` dosyasini tamamen oku.
-4. Istek belirli bir task koduyla ilgiliyse `docs/reference/CAEL_AI_SALES_AGENT_YOL_HARITASI_2026.pdf` icindeki o task sayfasini tamamen incele. Teslimler, zorunlu testler, bitis kriteri ve ozel kurallar birlikte okunmadan task kapsami eksiksiz sayilmaz.
-5. Istekle ilgili `docs/decisions/` ve `docs/runbooks/` dosyalarini oku.
+2. `docs/CAEL_AI_SALES_AGENT_YOL_HARITASI.md` dosyasinin ust durum blogunu ve ilgili task satirini oku.
+3. `docs/CAEL_AI_SALES_AGENT_ILERELEME_NOTLARI.md` dosyasinin yalniz son 2 kaydini ve task'in dogrudan bagli oldugu onceki task kaydini oku.
+4. Istek belirli bir task koduyla ilgiliyse `docs/KOMPAKT_YOL_HARITASI.md` icindeki o task kartini ve "Yalin calisma protokolu" bolumunu oku. Kart teslimler, zorunlu testler, bitis kriteri ve ozel kurallari icerir; PDF (`docs/reference/CAEL_AI_SALES_AGENT_YOL_HARITASI_2026.pdf`) yalniz kart belirsiz veya celiskili kalirsa ilgili sayfadan okunur. Test kosma zamanlamasi (gelistirirken / task sonu / kapi sonu) o bolumdeki test profiline gore yapilir.
+5. Istekle dogrudan ilgili `docs/decisions/` ve `docs/runbooks/` dosyalarini oku.
 6. Kod veya dosya degisikligi isteniyorsa mevcut repository durumunu ve diff'i incele. Kullanici yalnizca sohbet, aciklama, plan veya gorev listesi istiyorsa dosyalari degistirme.
 
 ## Kullanici niyetine gore calisma modu

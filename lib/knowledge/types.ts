@@ -37,6 +37,7 @@ export type ExtractedDocument = {
   byteSize: number;
   contentSha256: string;
   canonicalUrl?: string;
+  pageReference?: string;
 };
 
 export type SensitiveLine = {
@@ -52,6 +53,10 @@ export type PreparedChunk = {
   piiTypes: SensitiveLine["piiTypes"];
   hasPrice: boolean;
   priceLineNumbers: number[];
+  startLine: number;
+  endLine: number;
+  embedding?: number[];
+  embeddingModel?: string;
 };
 
 export type ClaimedJob = {
@@ -70,6 +75,11 @@ export type ClaimedJob = {
 
 export interface MalwareScanner {
   scan(file: ValidatedFile): Promise<"clean" | "infected">;
+}
+
+export interface EmbeddingProvider {
+  readonly model: string;
+  embed(inputs: string[]): Promise<number[][]>;
 }
 
 export interface WorkerRepository {

@@ -5,6 +5,7 @@ import { describe, expect, it, vi } from "vitest";
 import { chunkDocument } from "@/lib/knowledge/chunking";
 import { crawlSite } from "@/lib/knowledge/crawler";
 import { extractFile } from "@/lib/knowledge/extractors";
+import { DeterministicTestEmbeddingProvider } from "@/lib/knowledge/embeddings";
 import { validateFile } from "@/lib/knowledge/file-validation";
 import { IngestionWorker } from "@/lib/knowledge/worker";
 import {
@@ -22,18 +23,18 @@ describe("knowledge file ingestion", () => {
       fileName: "knowledge.txt",
       declaredMimeType: "text/plain",
     });
-    await expect(extractFile(txt)).resolves.toMatchObject({
-      text: "Hello\nPrice: 1.250 TL",
-    });
+    await expect(extractFile(txt)).resolves.toMatchObject([
+      { text: "Hello\nPrice: 1.250 TL" },
+    ]);
 
     const csv = await validateFile({
       bytes: bytes('question,answer\n"Hello, world",Yes'),
       fileName: "faq.csv",
       declaredMimeType: "text/csv",
     });
-    await expect(extractFile(csv)).resolves.toMatchObject({
-      text: "question | answer\nHello, world | Yes",
-    });
+    await expect(extractFile(csv)).resolves.toMatchObject([
+      { text: "question | answer\nHello, world | Yes" },
+    ]);
   });
 
   it("extracts XLSX and rejects corrupt or encrypted files", async () => {
@@ -47,9 +48,9 @@ describe("knowledge file ingestion", () => {
       declaredMimeType:
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     });
-    await expect(extractFile(xlsx)).resolves.toMatchObject({
-      text: expect.stringContaining("Plan | 200 TL"),
-    });
+    await expect(extractFile(xlsx)).resolves.toMatchObject([
+      { text: expect.stringContaining("Plan | 200 TL") },
+    ]);
 
     await expect(
       validateFile({
@@ -79,9 +80,14 @@ describe("knowledge file ingestion", () => {
       fileName: "roadmap.pdf",
       declaredMimeType: "application/pdf",
     });
-    await expect(extractFile(pdf)).resolves.toMatchObject({
-      text: expect.stringContaining("CAEL AI SALES AGENT"),
-    });
+    await expect(extractFile(pdf)).resolves.toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          text: expect.stringContaining("CAEL AI SALES AGENT"),
+          pageReference: expect.stringMatching(/^Page \d+$/),
+        }),
+      ]),
+    );
 
     const docxBytes = new Uint8Array(
       await readFile(
@@ -94,9 +100,9 @@ describe("knowledge file ingestion", () => {
       declaredMimeType:
         "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
     });
-    await expect(extractFile(docx)).resolves.toMatchObject({
-      text: expect.stringMatching(/\S/),
-    });
+    await expect(extractFile(docx)).resolves.toMatchObject([
+      { text: expect.stringMatching(/\S/) },
+    ]);
   });
 
   it("marks extracted PII types and exact price lines", () => {
@@ -176,7 +182,12 @@ describe("worker retry and idempotent persistence boundary", () => {
       complete: vi.fn(async () => undefined),
       fail: vi.fn(async () => undefined),
     };
-    const worker = new IngestionWorker(repository, { scan: vi.fn() });
+    const worker = new IngestionWorker(
+      repository,
+      { scan: vi.fn() },
+      undefined,
+      new DeterministicTestEmbeddingProvider(),
+    );
     await expect(worker.processNext()).resolves.toBe(true);
     expect(repository.replaceDocuments).toHaveBeenCalledOnce();
     expect(repository.complete).toHaveBeenCalledWith(job);
@@ -199,11 +210,16 @@ describe("worker retry and idempotent persistence boundary", () => {
       complete: vi.fn(async () => undefined),
       fail: vi.fn(async () => undefined),
     };
-    const worker = new IngestionWorker(repository, {
-      scan: vi.fn(async () => {
-        throw new IngestionError("MALWARE_SCANNER_UNAVAILABLE", true);
-      }),
-    });
+    const worker = new IngestionWorker(
+      repository,
+      {
+        scan: vi.fn(async () => {
+          throw new IngestionError("MALWARE_SCANNER_UNAVAILABLE", true);
+        }),
+      },
+      undefined,
+      new DeterministicTestEmbeddingProvider(),
+    );
     await worker.processNext();
     expect(repository.fail).toHaveBeenCalledWith(
       fileJob,

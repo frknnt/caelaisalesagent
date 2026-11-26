@@ -4,3 +4,4 @@ Deploy, rollback, incident, restore, connector ve production operasyonlari bu di
 
 - `WIDGET_KURULUM_VE_ANAHTAR.md` (P0.5)
 - `KNOWLEDGE_INGESTION.md` (P1.1)
+- `KNOWLEDGE_RETRIEVAL.md` (P1.2)

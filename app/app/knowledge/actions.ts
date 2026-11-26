@@ -160,3 +160,35 @@ export async function retryKnowledgeJob(formData: FormData) {
   revalidatePath("/app/knowledge");
   redirect("/app/knowledge?retried=1");
 }
+
+export async function setKnowledgeSourceLifecycle(formData: FormData) {
+  await requireAuthorization("knowledge:manage");
+  const sourceId = String(formData.get("sourceId") ?? "");
+  const publicationStatus = String(formData.get("publicationStatus") ?? "");
+  if (
+    !sourceId ||
+    !["draft", "approved", "disabled"].includes(publicationStatus)
+  )
+    fail("INVALID_LIFECYCLE_CHANGE");
+  const client = await createClient();
+  const { error } = await client.rpc("set_knowledge_source_lifecycle", {
+    p_source_id: sourceId,
+    p_publication_status: publicationStatus,
+  });
+  if (error) fail("LIFECYCLE_CHANGE_FAILED");
+  revalidatePath("/app/knowledge");
+  redirect(`/app/knowledge?lifecycle=${publicationStatus}`);
+}
+
+export async function reindexKnowledgeSource(formData: FormData) {
+  await requireAuthorization("knowledge:manage");
+  const sourceId = String(formData.get("sourceId") ?? "");
+  if (!sourceId) fail("SOURCE_REQUIRED");
+  const client = await createClient();
+  const { error } = await client.rpc("request_knowledge_reindex", {
+    p_source_id: sourceId,
+  });
+  if (error) fail("REINDEX_FAILED");
+  revalidatePath("/app/knowledge");
+  redirect("/app/knowledge?reindexed=1");
+}

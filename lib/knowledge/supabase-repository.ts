@@ -112,6 +112,7 @@ export class SupabaseWorkerRepository implements WorkerRepository {
           byte_size: document.byteSize,
           content_sha256: document.contentSha256,
           malware_status: malwareStatus,
+          page_reference: document.pageReference ?? null,
           storage_bucket: preserveRaw ? rawFile.storage_bucket : null,
           storage_path: preserveRaw ? rawFile.storage_path : null,
           raw_retention_until: preserveRaw ? rawFile.raw_retention_until : null,
@@ -131,6 +132,11 @@ export class SupabaseWorkerRepository implements WorkerRepository {
         pii_types: chunk.piiTypes,
         has_price: chunk.hasPrice,
         price_line_numbers: chunk.priceLineNumbers,
+        start_line: chunk.startLine,
+        end_line: chunk.endLine,
+        embedding: chunk.embedding ? `[${chunk.embedding.join(",")}]` : null,
+        embedding_model: chunk.embeddingModel ?? null,
+        embedded_at: chunk.embedding ? new Date().toISOString() : null,
       }));
       if (rows.length) {
         const { error: chunkError } = await this.client

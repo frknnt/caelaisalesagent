@@ -36,6 +36,8 @@ export function chunkDocument(
       piiTypes,
       hasPrice: priceLineNumbers.length > 0,
       priceLineNumbers,
+      startLine: chunk.start,
+      endLine: chunk.start + chunk.lines.length - 1,
     };
   });
 }

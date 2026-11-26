@@ -86,14 +86,20 @@ export type Database = {
           content_sha256: string;
           created_at: string;
           document_id: string;
+          embedded_at: string | null;
+          embedding: string | null;
+          embedding_model: string | null;
+          end_line: number;
           has_price: boolean;
           id: string;
           ordinal: number;
           organization_id: string;
           pii_types: string[];
           price_line_numbers: number[];
+          search_vector: unknown;
           site_id: string;
           source_id: string;
+          start_line: number;
           version_id: string;
         };
         ComputedFields: never;
@@ -102,14 +108,20 @@ export type Database = {
           content_sha256: string;
           created_at?: string;
           document_id: string;
+          embedded_at?: string | null;
+          embedding?: string | null;
+          embedding_model?: string | null;
+          end_line?: number;
           has_price?: boolean;
           id?: string;
           ordinal: number;
           organization_id: string;
           pii_types?: string[];
           price_line_numbers?: number[];
+          search_vector?: never;
           site_id: string;
           source_id: string;
+          start_line?: number;
           version_id: string;
         };
         Update: {
@@ -117,14 +129,20 @@ export type Database = {
           content_sha256?: string;
           created_at?: string;
           document_id?: string;
+          embedded_at?: string | null;
+          embedding?: string | null;
+          embedding_model?: string | null;
+          end_line?: number;
           has_price?: boolean;
           id?: string;
           ordinal?: number;
           organization_id?: string;
           pii_types?: string[];
           price_line_numbers?: number[];
+          search_vector?: never;
           site_id?: string;
           source_id?: string;
+          start_line?: number;
           version_id?: string;
         };
         Relationships: [
@@ -168,6 +186,7 @@ export type Database = {
           malware_status: string;
           mime_type: string;
           organization_id: string;
+          page_reference: string | null;
           raw_delete_claimed_at: string | null;
           raw_deleted_at: string | null;
           raw_retention_until: string | null;
@@ -188,6 +207,7 @@ export type Database = {
           malware_status?: string;
           mime_type: string;
           organization_id: string;
+          page_reference?: string | null;
           raw_delete_claimed_at?: string | null;
           raw_deleted_at?: string | null;
           raw_retention_until?: string | null;
@@ -207,6 +227,7 @@ export type Database = {
           malware_status?: string;
           mime_type?: string;
           organization_id?: string;
+          page_reference?: string | null;
           raw_delete_claimed_at?: string | null;
           raw_deleted_at?: string | null;
           raw_retention_until?: string | null;
@@ -380,15 +401,26 @@ export type Database = {
       };
       knowledge_sources: {
         Row: {
+          approved_at: string | null;
+          approved_by: string | null;
           canonical_url: string | null;
           created_at: string;
           created_by: string;
           current_version_id: string | null;
+          disabled_at: string | null;
+          disabled_by: string | null;
+          fresh_until: string | null;
+          freshness_checked_at: string | null;
+          freshness_ttl: string;
           id: string;
+          last_crawled_at: string | null;
+          last_reindex_requested_at: string | null;
           latest_error_code: string | null;
           name: string;
+          next_recrawl_at: string | null;
           organization_id: string;
           progress: number;
+          publication_status: string;
           site_id: string;
           source_key: string;
           source_type: string;
@@ -397,15 +429,26 @@ export type Database = {
         };
         ComputedFields: never;
         Insert: {
+          approved_at?: string | null;
+          approved_by?: string | null;
           canonical_url?: string | null;
           created_at?: string;
           created_by: string;
           current_version_id?: string | null;
+          disabled_at?: string | null;
+          disabled_by?: string | null;
+          fresh_until?: string | null;
+          freshness_checked_at?: string | null;
+          freshness_ttl?: string;
           id?: string;
+          last_crawled_at?: string | null;
+          last_reindex_requested_at?: string | null;
           latest_error_code?: string | null;
           name: string;
+          next_recrawl_at?: string | null;
           organization_id: string;
           progress?: number;
+          publication_status?: string;
           site_id: string;
           source_key: string;
           source_type: string;
@@ -413,15 +456,26 @@ export type Database = {
           updated_at?: string;
         };
         Update: {
+          approved_at?: string | null;
+          approved_by?: string | null;
           canonical_url?: string | null;
           created_at?: string;
           created_by?: string;
           current_version_id?: string | null;
+          disabled_at?: string | null;
+          disabled_by?: string | null;
+          fresh_until?: string | null;
+          freshness_checked_at?: string | null;
+          freshness_ttl?: string;
           id?: string;
+          last_crawled_at?: string | null;
+          last_reindex_requested_at?: string | null;
           latest_error_code?: string | null;
           name?: string;
+          next_recrawl_at?: string | null;
           organization_id?: string;
           progress?: number;
+          publication_status?: string;
           site_id?: string;
           source_key?: string;
           source_type?: string;
@@ -429,6 +483,13 @@ export type Database = {
           updated_at?: string;
         };
         Relationships: [
+          {
+            foreignKeyName: "knowledge_sources_approved_by_fkey";
+            columns: ["approved_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
           {
             foreignKeyName: "knowledge_sources_created_by_fkey";
             columns: ["created_by"];
@@ -442,6 +503,13 @@ export type Database = {
             isOneToOne: false;
             referencedRelation: "knowledge_versions";
             referencedColumns: ["organization_id", "id"];
+          },
+          {
+            foreignKeyName: "knowledge_sources_disabled_by_fkey";
+            columns: ["disabled_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
           },
           {
             foreignKeyName: "knowledge_sources_organization_id_site_id_fkey";
@@ -1074,6 +1142,10 @@ export type Database = {
           site_id: string;
         }[];
       };
+      enqueue_due_knowledge_recrawls: {
+        Args: { p_limit?: number };
+        Returns: number;
+      };
       enqueue_knowledge_source: {
         Args: {
           p_canonical_url?: string;
@@ -1127,12 +1199,46 @@ export type Database = {
         Args: { p_organization_id: string; p_user_id: string };
         Returns: undefined;
       };
+      request_knowledge_reindex: {
+        Args: { p_source_id: string };
+        Returns: string;
+      };
+      retrieve_approved_knowledge: {
+        Args: {
+          p_match_count?: number;
+          p_organization_id: string;
+          p_query_embedding?: string;
+          p_query_text: string;
+          p_rrf_k?: number;
+          p_site_id: string;
+        };
+        Returns: {
+          chunk_id: string;
+          fresh_until: string;
+          fused_score: number;
+          lexical_rank: number;
+          page_reference: string;
+          semantic_rank: number;
+          snippet: string;
+          source_id: string;
+          source_title: string;
+          source_url: string;
+        }[];
+      };
       retry_ingestion_job: { Args: { p_job_id: string }; Returns: number };
       revoke_organization_invitation: {
         Args: { p_invitation_id: string };
         Returns: undefined;
       };
       revoke_site_key: { Args: { p_key_id: string }; Returns: undefined };
+      set_knowledge_source_lifecycle: {
+        Args: { p_publication_status: string; p_source_id: string };
+        Returns: {
+          fresh_until: string;
+          publication_status: string;
+          source_id: string;
+        }[];
+      };
       update_ingestion_progress: {
         Args: { p_job_id: string; p_progress: number };
         Returns: undefined;

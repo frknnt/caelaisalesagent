@@ -3,6 +3,7 @@ import { lookup } from "node:dns/promises";
 import { chunkDocument } from "./chunking";
 import { crawlSite, type CrawlDependencies } from "./crawler";
 import { extractFile } from "./extractors";
+import { createEmbeddingProvider } from "./embeddings";
 import { sha256 } from "./hash";
 import { validateFile } from "./file-validation";
 import {
@@ -25,6 +26,7 @@ export class IngestionWorker {
     private readonly repository: WorkerRepository,
     private readonly malwareScanner: MalwareScanner,
     private readonly crawlDependencies = defaultCrawlDependencies,
+    private readonly embeddingProvider = createEmbeddingProvider(),
   ) {}
 
   async processNext() {
@@ -41,7 +43,7 @@ export class IngestionWorker {
           throw new IngestionError("MALWARE_DETECTED", false);
         malwareStatus = "clean";
         await this.repository.setProgress(job.jobId, 40);
-        documents = [await extractFile(file)];
+        documents = await extractFile(file);
       } else if (job.sourceType === "site" || job.sourceType === "url") {
         if (!job.canonicalUrl)
           throw new IngestionError("SOURCE_URL_MISSING", false);
@@ -68,6 +70,17 @@ export class IngestionWorker {
       }
       await this.repository.setProgress(job.jobId, 70);
       const chunks = documents.map((document) => chunkDocument(document.text));
+      const flattened = chunks.flat();
+      const embeddings = await this.embeddingProvider.embed(
+        flattened.map((chunk) => chunk.content),
+      );
+      flattened.forEach((chunk, index) => {
+        const embedding = embeddings[index];
+        if (!embedding)
+          throw new IngestionError("EMBEDDING_INVALID_RESPONSE", true);
+        chunk.embedding = embedding;
+        chunk.embeddingModel = this.embeddingProvider.model;
+      });
       await this.repository.replaceDocuments(
         job,
         documents,

@@ -2,6 +2,7 @@ import { timingSafeEqual } from "node:crypto";
 
 import { IngestionWorker, WebhookMalwareScanner } from "@/lib/knowledge/worker";
 import { SupabaseWorkerRepository } from "@/lib/knowledge/supabase-repository";
+import { createEmbeddingProvider } from "@/lib/knowledge/embeddings";
 import { withApiObservability } from "@/lib/observability/api-route";
 
 export const dynamic = "force-dynamic";
@@ -31,6 +32,8 @@ export const POST = withApiObservability(
         process.env.INGESTION_MALWARE_SCANNER_URL,
         process.env.INGESTION_MALWARE_SCANNER_TOKEN,
       ),
+      undefined,
+      createEmbeddingProvider(),
     );
     return Response.json({ processed: await worker.processNext() });
   },

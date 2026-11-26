@@ -4,9 +4,15 @@ import Link from "next/link";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { SubmitButton } from "@/components/forms/SubmitButton";
 import { requireAuthorization } from "@/lib/auth/guard";
+import { isFreshSource } from "@/lib/knowledge/freshness";
 import { createClient } from "@/lib/supabase/server";
 
-import { addKnowledgeSource, retryKnowledgeJob } from "./actions";
+import {
+  addKnowledgeSource,
+  reindexKnowledgeSource,
+  retryKnowledgeJob,
+  setKnowledgeSourceLifecycle,
+} from "./actions";
 
 export const metadata: Metadata = {
   title: "Knowledge sources",
@@ -44,7 +50,7 @@ export default async function KnowledgePage({
       client
         .from("knowledge_sources")
         .select(
-          "id,name,source_type,status,progress,latest_error_code,updated_at",
+          "id,name,source_type,status,progress,latest_error_code,updated_at,publication_status,freshness_checked_at,fresh_until,next_recrawl_at",
         )
         .eq("organization_id", organizationId)
         .order("updated_at", { ascending: false }),
@@ -64,9 +70,13 @@ export default async function KnowledgePage({
       ? "This exact source already exists; no duplicate job was created."
       : params.retried
         ? "Failed job queued again safely."
-        : params.error
-          ? `Source was not accepted (${String(params.error)}).`
-          : null;
+        : params.reindexed
+          ? "Source queued for a fresh index."
+          : params.lifecycle
+            ? `Source lifecycle changed to ${String(params.lifecycle)}.`
+            : params.error
+              ? `Source was not accepted (${String(params.error)}).`
+              : null;
   const defaultSite = sites?.[0]?.id ?? "";
 
   return (
@@ -130,6 +140,7 @@ export default async function KnowledgePage({
           <ul className="mt-5 grid gap-3">
             {sources.map((source) => {
               const job = latestJob.get(source.id);
+              const isFresh = isFreshSource(source.status, source.fresh_until);
               return (
                 <li
                   key={source.id}
@@ -143,6 +154,14 @@ export default async function KnowledgePage({
                       >
                         {source.status}
                       </span>
+                      <span className="border-line bg-white rounded-full border px-2.5 py-1 text-xs font-semibold uppercase">
+                        {source.publication_status}
+                      </span>
+                      <span
+                        className={`rounded-full border px-2.5 py-1 text-xs font-semibold uppercase ${isFresh ? "border-emerald-300 bg-emerald-50 text-emerald-900" : "border-amber-300 bg-amber-50 text-amber-900"}`}
+                      >
+                        {isFresh ? "fresh" : "stale / unavailable"}
+                      </span>
                     </div>
                     <p className="text-muted mt-2 text-sm">
                       {source.source_type} · {source.progress}% · attempt{" "}
@@ -153,16 +172,61 @@ export default async function KnowledgePage({
                         Error: {source.latest_error_code}
                       </p>
                     ) : null}
+                    <p className="text-muted mt-2 text-sm">
+                      Freshness checked:{" "}
+                      {source.freshness_checked_at ?? "not yet"}
+                      {source.fresh_until
+                        ? ` · valid until ${source.fresh_until}`
+                        : " · not retrievable"}
+                    </p>
                   </div>
-                  {source.status === "failed" && job ? (
-                    <form action={retryKnowledgeJob}>
-                      <input type="hidden" name="jobId" value={job.id} />
-                      <SubmitButton
-                        label="Retry safely"
-                        pendingLabel="Queueing…"
+                  <div className="flex flex-wrap gap-2 sm:justify-end">
+                    {source.status === "failed" && job ? (
+                      <form action={retryKnowledgeJob}>
+                        <input type="hidden" name="jobId" value={job.id} />
+                        <SubmitButton
+                          label="Retry safely"
+                          pendingLabel="Queueing…"
+                        />
+                      </form>
+                    ) : null}
+                    {source.status === "ready" &&
+                    source.publication_status !== "approved" &&
+                    isFresh ? (
+                      <LifecycleForm
+                        sourceId={source.id}
+                        status="approved"
+                        label="Approve"
                       />
-                    </form>
-                  ) : null}
+                    ) : null}
+                    {source.publication_status === "approved" ? (
+                      <LifecycleForm
+                        sourceId={source.id}
+                        status="disabled"
+                        label="Disable"
+                      />
+                    ) : source.publication_status === "disabled" ? (
+                      <LifecycleForm
+                        sourceId={source.id}
+                        status="draft"
+                        label="Move to draft"
+                      />
+                    ) : null}
+                    {source.status === "ready" &&
+                    ["site", "url"].includes(source.source_type) ? (
+                      <form action={reindexKnowledgeSource}>
+                        <input
+                          type="hidden"
+                          name="sourceId"
+                          value={source.id}
+                        />
+                        <SubmitButton
+                          label="Reindex now"
+                          pendingLabel="Queueing…"
+                        />
+                      </form>
+                    ) : null}
+                  </div>
                 </li>
               );
             })}
@@ -170,6 +234,24 @@ export default async function KnowledgePage({
         )}
       </section>
     </PageContainer>
+  );
+}
+
+function LifecycleForm({
+  sourceId,
+  status,
+  label,
+}: {
+  sourceId: string;
+  status: "draft" | "approved" | "disabled";
+  label: string;
+}) {
+  return (
+    <form action={setKnowledgeSourceLifecycle}>
+      <input type="hidden" name="sourceId" value={sourceId} />
+      <input type="hidden" name="publicationStatus" value={status} />
+      <SubmitButton label={label} pendingLabel="Saving…" />
+    </form>
   );
 }
 

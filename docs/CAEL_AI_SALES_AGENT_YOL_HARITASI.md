@@ -6,7 +6,7 @@ Bu dosya task durumlarinin, `NEXT_TASK` alaninin ve degismez uygulama kurallarin
 
 - Aktif task: `P1.1`
 - NEXT_TASK: `P1.1`
-- Son tamamlanan task: `P0.5`
+- Son tamamlanan task: `P1.2`
 - Release kapisi: Guvenli temel / Faz 0
 - Baslangic tarihi: 2026-11-20
 
@@ -59,7 +59,7 @@ Bir task blocked ise yalniz bagimliligi tamamlanmis baska bir task'a gecilebilir
 | P0.4 | F0 - Temel | Test, sahte servisler ve observability | DONE | 12 | 2026-11-24; agsiz 267 unit+component, 162 pgTAP ve 60 E2E testi yesil, hata kaniti ve append-only audit/metrik semasi kuruldu |
 | P0.5 | F0 - Temel | Embed script, domain kilidi ve public session | DONE | 13 | 2026-11-24; izinli sitede widget 1 sn altinda kullanilabilir, baska domain ve gecersiz token reddedilir; 473 unit+component, 299 pgTAP ve 166 E2E testi yesil |
 | P1.1 | F1 - Agent | Bilgi kaynaklari ve ingestion kuyrugu | ACTIVE | 14 | Uygulama ve zorunlu kanit kapilari calisiyor |
-| P1.2 | F1 - Agent | Retrieval, kaynak gosterme ve freshness | NOT STARTED | 15 | - |
+| P1.2 | F1 - Agent | Retrieval, kaynak gosterme ve freshness | DONE | 15 | 2026-11-26; tenant/site filtreli hybrid retrieval, kanit sozlesmesi, kaynak yasam dongusu ve freshness/reindex akislari; 492 unit+component, 370 pgTAP ve P1.2 E2E kapilari yesil |
 | P1.3 | F1 - Agent | LLM provider adaptoru ve agent dongusu | NOT STARTED | 16 | - |
 | P1.4 | F1 - Agent | Widget konusmasi ve session hafizasi | NOT STARTED | 17 | - |
 | P1.5 | F1 - Agent | Inbox, insan devri ve canli takip | NOT STARTED | 18 | - |

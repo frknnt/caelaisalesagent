@@ -27,7 +27,7 @@ function asDocument(file: ValidatedFile, text: string): ExtractedDocument {
   };
 }
 
-async function extractPdf(file: ValidatedFile) {
+async function extractPdfPages(file: ValidatedFile) {
   try {
     const pdf = await getDocument({
       data: file.bytes.slice(),
@@ -44,7 +44,7 @@ async function extractPdf(file: ValidatedFile) {
           .trim(),
       );
     }
-    return pages.join("\n\n");
+    return pages;
   } catch (error) {
     if (
       typeof error === "object" &&
@@ -106,10 +106,23 @@ async function extractWorkbook(file: ValidatedFile) {
 
 export async function extractFile(
   file: ValidatedFile,
-): Promise<ExtractedDocument> {
+): Promise<ExtractedDocument[]> {
   try {
-    if (file.mimeType === "application/pdf")
-      return asDocument(file, await extractPdf(file));
+    if (file.mimeType === "application/pdf") {
+      const pages = await extractPdfPages(file);
+      const documents = pages.flatMap((page, index) => {
+        if (!page.trim()) return [];
+        return [
+          {
+            ...asDocument(file, page),
+            pageReference: `Page ${index + 1}`,
+          },
+        ];
+      });
+      if (!documents.length)
+        throw new IngestionError("EMPTY_EXTRACTED_TEXT", false);
+      return documents;
+    }
     if (
       file.mimeType ===
       "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
@@ -117,13 +130,13 @@ export async function extractFile(
       const result = await mammoth.extractRawText({
         buffer: Buffer.from(file.bytes),
       });
-      return asDocument(file, result.value);
+      return [asDocument(file, result.value)];
     }
     if (file.mimeType === "text/plain")
-      return asDocument(file, decode(file.bytes));
+      return [asDocument(file, decode(file.bytes))];
     if (file.mimeType === "text/csv")
-      return asDocument(file, parseCsv(decode(file.bytes)));
-    return asDocument(file, await extractWorkbook(file));
+      return [asDocument(file, parseCsv(decode(file.bytes)))];
+    return [asDocument(file, await extractWorkbook(file))];
   } catch (error) {
     if (error instanceof IngestionError) throw error;
     throw new IngestionError("CORRUPT_DOCUMENT", false);

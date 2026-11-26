@@ -30,9 +30,11 @@ Postgres şemasından üretilen TypeScript sözleşmesidir.
 - `llm_call_metrics`: sağlayıcı denemesi başına token, süre ve maliyet. Yalnız
   service role ekler, owner/admin okur; fatura defteri değildir.
 - `knowledge_sources` / `knowledge_versions`: tenant + site kapsamlı kaynak ve
-  immutable içerik sürümü; görünür durum `pending/processing/ready/failed`.
+  immutable içerik sürümü; ingestion durumu `pending/processing/ready/failed`,
+  yayın durumu `draft/approved/disabled` ve freshness penceresi ayrıdır.
 - `documents` / `chunks`: çıkarılan dokümanlar ve deterministic parçalar. Chunk
-  PII türleri ile fiyat satırı numaralarını taşır.
+  PII/fiyat satırlarının yanında FTS vektörü ve 384 boyut embedding taşır;
+  doküman URL/sayfa citation hedefini korur.
 - `ingestion_jobs`: idempotent PGMQ worker işi, attempt/progress/error code ve
   poison durumunu taşır; ham içerik taşımaz.
 

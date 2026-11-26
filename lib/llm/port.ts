@@ -33,6 +33,12 @@ export interface LlmRequest {
   messages: readonly LlmMessage[];
   maxOutputTokens: number;
   tools?: readonly LlmToolSpec[];
+  /**
+   * Streaming: called with each piece of answer text as it arrives. For
+   * display only; the returned completion is the authoritative text, and the
+   * guarded call stops forwarding pieces once the attempt has settled.
+   */
+  onTextDelta?: ((delta: string) => void) | undefined;
 }
 
 export interface LlmCompletion {

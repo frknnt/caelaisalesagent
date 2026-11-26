@@ -176,6 +176,61 @@ export type Database = {
           },
         ];
       };
+      conversations: {
+        Row: {
+          created_at: string;
+          id: string;
+          last_message_at: string;
+          organization_id: string;
+          site_id: string;
+          status: string;
+          summarized_through: string | null;
+          summary: string | null;
+          visitor_id: string;
+          visitor_message_count: number;
+        };
+        ComputedFields: never;
+        Insert: {
+          created_at?: string;
+          id?: string;
+          last_message_at?: string;
+          organization_id: string;
+          site_id: string;
+          status?: string;
+          summarized_through?: string | null;
+          summary?: string | null;
+          visitor_id: string;
+          visitor_message_count?: number;
+        };
+        Update: {
+          created_at?: string;
+          id?: string;
+          last_message_at?: string;
+          organization_id?: string;
+          site_id?: string;
+          status?: string;
+          summarized_through?: string | null;
+          summary?: string | null;
+          visitor_id?: string;
+          visitor_message_count?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "conversations_organization_id_site_id_fkey";
+            columns: ["organization_id", "site_id"];
+            isOneToOne: false;
+            referencedRelation: "sites";
+            referencedColumns: ["organization_id", "id"];
+          },
+          {
+            foreignKeyName: "conversations_organization_id_visitor_id_fkey";
+            columns: ["organization_id", "visitor_id"];
+            isOneToOne: false;
+            referencedRelation: "visitor_identities";
+            referencedColumns: ["organization_id", "id"];
+          },
+        ];
+      };
       documents: {
         Row: {
           byte_size: number;
@@ -704,6 +759,76 @@ export type Database = {
           },
         ];
       };
+      messages: {
+        Row: {
+          attempts: number;
+          body: string;
+          citations: NonNullable<Json>;
+          claimed_at: string | null;
+          client_message_id: string | null;
+          conversation_id: string;
+          created_at: string;
+          feedback: number | null;
+          handoff: boolean;
+          id: string;
+          organization_id: string;
+          prompt_version: string | null;
+          reply_to: string | null;
+          role: string;
+          status: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          attempts?: number;
+          body?: string;
+          citations?: NonNullable<Json>;
+          claimed_at?: string | null;
+          client_message_id?: string | null;
+          conversation_id: string;
+          created_at?: string;
+          feedback?: number | null;
+          handoff?: boolean;
+          id?: string;
+          organization_id: string;
+          prompt_version?: string | null;
+          reply_to?: string | null;
+          role: string;
+          status?: string;
+        };
+        Update: {
+          attempts?: number;
+          body?: string;
+          citations?: NonNullable<Json>;
+          claimed_at?: string | null;
+          client_message_id?: string | null;
+          conversation_id?: string;
+          created_at?: string;
+          feedback?: number | null;
+          handoff?: boolean;
+          id?: string;
+          organization_id?: string;
+          prompt_version?: string | null;
+          reply_to?: string | null;
+          role?: string;
+          status?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "messages_organization_id_conversation_id_fkey";
+            columns: ["organization_id", "conversation_id"];
+            isOneToOne: false;
+            referencedRelation: "conversations";
+            referencedColumns: ["organization_id", "id"];
+          },
+          {
+            foreignKeyName: "messages_reply_to_fkey";
+            columns: ["reply_to"];
+            isOneToOne: true;
+            referencedRelation: "messages";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       organization_invitations: {
         Row: {
           accepted_at: string | null;
@@ -918,6 +1043,139 @@ export type Database = {
             columns: ["organization_id"];
             isOneToOne: false;
             referencedRelation: "organizations";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      visitor_consents: {
+        Row: {
+          granted: boolean;
+          id: string;
+          organization_id: string;
+          purpose: string;
+          recorded_at: string;
+          site_id: string;
+          source: string;
+          text_version: string;
+          visitor_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          granted: boolean;
+          id?: string;
+          organization_id: string;
+          purpose: string;
+          recorded_at?: string;
+          site_id: string;
+          source: string;
+          text_version: string;
+          visitor_id: string;
+        };
+        Update: {
+          granted?: boolean;
+          id?: string;
+          organization_id?: string;
+          purpose?: string;
+          recorded_at?: string;
+          site_id?: string;
+          source?: string;
+          text_version?: string;
+          visitor_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "visitor_consents_organization_id_visitor_id_fkey";
+            columns: ["organization_id", "visitor_id"];
+            isOneToOne: false;
+            referencedRelation: "visitor_identities";
+            referencedColumns: ["organization_id", "id"];
+          },
+        ];
+      };
+      visitor_identities: {
+        Row: {
+          created_at: string;
+          id: string;
+          last_seen_at: string;
+          memory_consent_at: string | null;
+          memory_consent_text_version: string | null;
+          organization_id: string;
+          secret_hash: string;
+          site_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          created_at?: string;
+          id?: string;
+          last_seen_at?: string;
+          memory_consent_at?: string | null;
+          memory_consent_text_version?: string | null;
+          organization_id: string;
+          secret_hash: string;
+          site_id: string;
+        };
+        Update: {
+          created_at?: string;
+          id?: string;
+          last_seen_at?: string;
+          memory_consent_at?: string | null;
+          memory_consent_text_version?: string | null;
+          organization_id?: string;
+          secret_hash?: string;
+          site_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "visitor_identities_organization_id_site_id_fkey";
+            columns: ["organization_id", "site_id"];
+            isOneToOne: false;
+            referencedRelation: "sites";
+            referencedColumns: ["organization_id", "id"];
+          },
+        ];
+      };
+      visitor_sessions: {
+        Row: {
+          created_at: string;
+          id: string;
+          organization_id: string;
+          resumed: boolean;
+          site_id: string;
+          visitor_id: string;
+          widget_session_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          created_at?: string;
+          id?: string;
+          organization_id: string;
+          resumed: boolean;
+          site_id: string;
+          visitor_id: string;
+          widget_session_id: string;
+        };
+        Update: {
+          created_at?: string;
+          id?: string;
+          organization_id?: string;
+          resumed?: boolean;
+          site_id?: string;
+          visitor_id?: string;
+          widget_session_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "visitor_sessions_organization_id_visitor_id_fkey";
+            columns: ["organization_id", "visitor_id"];
+            isOneToOne: false;
+            referencedRelation: "visitor_identities";
+            referencedColumns: ["organization_id", "id"];
+          },
+          {
+            foreignKeyName: "visitor_sessions_widget_session_id_fkey";
+            columns: ["widget_session_id"];
+            isOneToOne: true;
+            referencedRelation: "widget_sessions";
             referencedColumns: ["id"];
           },
         ];
@@ -1243,6 +1501,20 @@ export type Database = {
         Args: { p_job_id: string; p_progress: number };
         Returns: undefined;
       };
+      widget_attach_visitor: {
+        Args: {
+          p_new_secret_hash: string;
+          p_secret_hash: string;
+          p_widget_session_id: string;
+        };
+        Returns: {
+          conversation_id: string;
+          memory_consent: boolean;
+          outcome: string;
+          resumed: boolean;
+          visitor_id: string;
+        }[];
+      };
       widget_bootstrap: {
         Args: {
           p_client_hash: string;
@@ -1264,6 +1536,36 @@ export type Database = {
           widget_title: string;
         }[];
       };
+      widget_complete_reply: {
+        Args: {
+          p_body: string;
+          p_citations: Json;
+          p_handoff: boolean;
+          p_prompt_version: string;
+          p_reply_id: string;
+          p_status: string;
+        };
+        Returns: boolean;
+      };
+      widget_conversation: {
+        Args: { p_limit: number; p_widget_session_id: string };
+        Returns: {
+          body: string;
+          citations: Json;
+          client_message_id: string;
+          conversation_id: string;
+          created_at: string;
+          feedback: number;
+          handoff: boolean;
+          memory_consent: boolean;
+          message_id: string;
+          reply_to: string;
+          role: string;
+          status: string;
+          summarized_through: string;
+          summary: string;
+        }[];
+      };
       widget_frame: {
         Args: {
           p_client_hash: string;
@@ -1280,6 +1582,48 @@ export type Database = {
           site_name: string;
           widget_title: string;
         }[];
+      };
+      widget_post_message: {
+        Args: {
+          p_body: string;
+          p_client_message_id: string;
+          p_widget_session_id: string;
+        };
+        Returns: {
+          conversation_id: string;
+          message_id: string;
+          outcome: string;
+          reply_body: string;
+          reply_citations: Json;
+          reply_handoff: boolean;
+          reply_id: string;
+          reply_status: string;
+          retry_after: number;
+        }[];
+      };
+      widget_set_feedback: {
+        Args: {
+          p_message_id: string;
+          p_value: number;
+          p_widget_session_id: string;
+        };
+        Returns: boolean;
+      };
+      widget_set_memory_consent: {
+        Args: {
+          p_granted: boolean;
+          p_text_version: string;
+          p_widget_session_id: string;
+        };
+        Returns: boolean;
+      };
+      widget_update_summary: {
+        Args: {
+          p_conversation_id: string;
+          p_summary: string;
+          p_through: string;
+        };
+        Returns: boolean;
       };
     };
     Enums: {

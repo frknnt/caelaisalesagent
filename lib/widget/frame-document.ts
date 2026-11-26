@@ -19,6 +19,16 @@ export function escapeHtml(value: string) {
   return value.replace(/[&<>"']/g, (character) => escapes[character] ?? "");
 }
 
+/** JSON for a data block: nothing in it can close the element or start markup. */
+export function jsonForHtml(value: unknown) {
+  return JSON.stringify(value)
+    .replace(/</g, "\\u003c")
+    .replace(/>/g, "\\u003e")
+    .replace(/&/g, "\\u0026")
+    .replace(/\u2028/g, "\\u2028")
+    .replace(/\u2029/g, "\\u2029");
+}
+
 /** Nothing but this document's own script, style and same-origin requests. */
 export function frameCsp(embedOrigin: string) {
   return [
@@ -77,8 +87,20 @@ export function renderFrame({ embedOrigin, site }: FrameOptions) {
 <p id="status" role="status">${text(copy.loading)}</p>
 <button type="button" id="action" hidden></button>
 </div>
+<ol id="log" aria-label="${text(copy.chat.messages)}"></ol>
+<div id="prompts" hidden></div>
 </div>
-<div class="bottom">${person}</div>
+<form id="composer" hidden>
+<textarea id="input" name="message" rows="1" maxlength="1000" aria-label="${text(copy.chat.inputLabel)}" placeholder="${text(copy.chat.placeholder)}" autocomplete="off"></textarea>
+<button type="button" id="attach" aria-label="${text(copy.chat.attach)}" aria-describedby="attach-note"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M21 11.5l-8.6 8.6a5 5 0 01-7.1-7.1l8.6-8.6a3.3 3.3 0 014.7 4.7l-8.6 8.6a1.7 1.7 0 01-2.4-2.4l7.9-7.9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+<button type="submit" id="send">${text(copy.chat.send)}</button>
+</form>
+<p id="attach-note" class="note" hidden>${text(copy.chat.attachSoon)}</p>
+<p id="announce" class="visually-hidden" aria-live="polite"></p>
+<div class="bottom">${person}
+<div id="memory-row" class="memory" hidden><input type="checkbox" id="memory" aria-describedby="memory-hint"><label for="memory">${text(copy.chat.memory)}</label><p id="memory-hint">${text(copy.chat.memoryHint)}</p></div>
+</div>
+<script type="application/json" id="chat-copy">${jsonForHtml(copy.chat)}</script>
 <script>${frameScript}</script>
 </body>
 </html>

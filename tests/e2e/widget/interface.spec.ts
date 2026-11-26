@@ -164,10 +164,21 @@ test("works with the keyboard alone", async ({ page, keys }) => {
   await expect(
     frame(page).getByRole("button", { name: "Kapat" }),
   ).toBeFocused();
-  await page.keyboard.press("Tab");
-  await expect(
+  // P1.4: suggested prompts, the message box, attach, send, then the way to a
+  // person and the memory choice.
+  for (const stop of [
+    frame(page).locator("#prompts button").nth(0),
+    frame(page).locator("#prompts button").nth(1),
+    frame(page).locator("#prompts button").nth(2),
+    frame(page).getByRole("textbox", { name: "Mesajınız" }),
+    frame(page).getByRole("button", { name: "Dosya ekle" }),
+    frame(page).getByRole("button", { name: "Gönder" }),
     frame(page).getByRole("link", { name: "Bir kişiyle görüş" }),
-  ).toBeFocused();
+    frame(page).getByRole("checkbox", { name: "Bu cihazda konuşmamı hatırla" }),
+  ]) {
+    await page.keyboard.press("Tab");
+    await expect(stop).toBeFocused();
+  }
   // Beside the page it is not modal: Tab leaves towards the launcher.
   await page.keyboard.press("Tab");
   await expect(launcher(page)).toBeFocused();
@@ -214,12 +225,28 @@ test("on a phone it covers the page and keeps the focus inside", async ({
   expect(Math.abs(box!.y + box!.height - 700)).toBeLessThan(2);
   const close = frame(page).getByRole("button", { name: "Kapat" });
   const person = frame(page).getByRole("link", { name: "Bir kişiyle görüş" });
-  for (const target of [close, person, close, person]) {
+  // P1.4: the conversation controls sit between the two; the last stop is the
+  // memory choice, and focus wraps from it to the first.
+  const remember = frame(page).getByRole("checkbox", {
+    name: "Bu cihazda konuşmamı hatırla",
+  });
+  const stops = [
+    close,
+    frame(page).locator("#prompts button").nth(0),
+    frame(page).locator("#prompts button").nth(1),
+    frame(page).locator("#prompts button").nth(2),
+    frame(page).getByRole("textbox", { name: "Mesajınız" }),
+    frame(page).getByRole("button", { name: "Dosya ekle" }),
+    frame(page).getByRole("button", { name: "Gönder" }),
+    person,
+    remember,
+  ];
+  for (const target of [...stops, close]) {
     await page.keyboard.press("Tab");
     await expect(target).toBeFocused();
   }
   await page.keyboard.press("Shift+Tab");
-  await expect(close).toBeFocused();
+  await expect(remember).toBeFocused();
   await page.keyboard.press("Shift+Tab");
   await expect(person).toBeFocused();
   await page.keyboard.press("Escape");

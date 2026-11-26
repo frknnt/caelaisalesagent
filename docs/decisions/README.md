@@ -10,3 +10,4 @@ Her kayit en az baglam, karar, alternatifler, sonuclar, riskler ve geri alma yol
 - `ADR-20261124-widget-embed-domain-kilidi-ve-public-session.md`
 - `ADR-20261125-knowledge-ingestion-ve-kuyruk.md`
 - `ADR-20261126-retrieval-kaynak-ve-freshness.md`
+- `ADR-20261126-widget-konusma-ve-session-hafizasi.md`

@@ -40,8 +40,9 @@ function integer(env: Env, key: string, fallback: number, max: number) {
 
 /** Reads server-only env. Invalid values fail closed instead of defaulting. */
 export function readLlmConfig(env: Env): LlmConfigResult {
-  const provider = env.LLM_PROVIDER?.trim() || "fake";
-  const model = env.LLM_MODEL?.trim() || "fake-model-1";
+  // Unset means unconfigured: no adapter has this name, so every turn hands off.
+  const provider = env.LLM_PROVIDER?.trim() || "unconfigured";
+  const model = env.LLM_MODEL?.trim() || "unconfigured";
   if (!NAME.test(provider))
     return { ok: false, code: "LLM_CONFIG_INVALID", field: "LLM_PROVIDER" };
   if (!MODEL.test(model))

@@ -66,8 +66,10 @@ test.describe("where the widget opens", () => {
     await expect(
       frame(page).getByRole("link", { name: "Bir kişiyle görüş" }),
     ).toHaveAttribute("href", "https://shop-a.example/contact");
-    // Nothing pretends to chat before P1.4.
-    await expect(frame(page).locator("textarea, input")).toHaveCount(0);
+    // P1.4: the conversation is open, with a labelled message box.
+    await expect(
+      frame(page).getByRole("textbox", { name: "Mesajınız" }),
+    ).toBeVisible();
 
     await expectHostUnharmed(page);
     expect(await appCookies(context)).toEqual([]);
@@ -77,13 +79,19 @@ test.describe("where the widget opens", () => {
     const embedded = page
       .frames()
       .find((candidate) => candidate.url().startsWith(appUrl));
+    // The frame keeps one thing, the anonymous visitor key, for this tab only
+    // (device storage needs memory consent). Never the session token, never a cookie.
     expect(
       await embedded?.evaluate(() => [
         localStorage.length,
         sessionStorage.length,
+        Object.keys(sessionStorage),
+        /^[A-Za-z0-9_-]{43}$/.test(
+          sessionStorage.getItem("cael.visitor") ?? "",
+        ),
         document.cookie,
       ]),
-    ).toEqual([0, 0, ""]);
+    ).toEqual([0, 1, ["cael.visitor"], true, ""]);
   });
 
   test("the key may be in the script address, and the script at the end", async ({

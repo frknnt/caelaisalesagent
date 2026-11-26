@@ -10,6 +10,9 @@ export type FakeLlmStep =
       kind: "answer";
       text: string;
       delayMs?: number;
+      /** Streams these pieces (they must join to `text`), `chunkDelayMs` apart. */
+      chunks?: readonly string[];
+      chunkDelayMs?: number;
     }
   | { kind: "refusal" }
   | { kind: "rate_limited"; retryAfterMs: number }
@@ -81,6 +84,10 @@ export class FakeLlm implements LlmPort {
     switch (step.kind) {
       case "answer":
         if (step.delayMs) await wait(step.delayMs, signal);
+        for (const piece of step.chunks ?? []) {
+          if (step.chunkDelayMs) await wait(step.chunkDelayMs);
+          request.onTextDelta?.(piece);
+        }
         return completion("stop", step.text);
       case "refusal":
         return completion("refusal", "");

@@ -39,8 +39,6 @@ describe("widget assets", () => {
     for (const code of [assets.loaderScript, assets.frameScript]) {
       for (const banned of [
         "document.cookie",
-        "localStorage",
-        "sessionStorage",
         "indexedDB",
         "innerHTML",
         "insertAdjacentHTML",
@@ -54,6 +52,20 @@ describe("widget assets", () => {
       expect(code.match(/https?:\/\/(?!www\.w3\.org)[\w.]+/g)).toBeNull();
     }
     expect(assets.frameStyle).not.toMatch(/url\(|@import/);
+  });
+
+  it("keep storage off the customer's page and to one visitor key in the frame", () => {
+    // The loader runs on the customer's page: no storage at all.
+    expect(assets.loaderScript).not.toContain("localStorage");
+    expect(assets.loaderScript).not.toContain("sessionStorage");
+    // The frame reaches storage through one accessor and one key (P1.4 ADR).
+    // The session token is never written: only `setItem` of that key exists.
+    const count = (needle: string) =>
+      assets.frameScript.split(needle).length - 1;
+    expect(count("localStorage")).toBe(1);
+    expect(count("sessionStorage")).toBe(1);
+    expect(count("cael.visitor")).toBe(1);
+    expect(count("setItem(")).toBe(2);
   });
 
   it("name every state by text, not by color alone", () => {

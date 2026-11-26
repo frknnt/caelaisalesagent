@@ -1,5 +1,5 @@
 begin;
-select plan(31);
+select plan(32);
 
 select ok(exists(select 1 from pg_extension where extname = 'vector'), 'pgvector is installed');
 select has_column('public', 'knowledge_sources', 'publication_status', 'source lifecycle exists');
@@ -163,6 +163,18 @@ select is(
   1::bigint,
   'only approved, fresh, ready, current source is retrieved'
 );
+set local role service_role;
+select is(
+  (select count(*) from public.retrieve_approved_knowledge(
+    'a0000000-0000-4000-8000-000000000001',
+    'a0000000-0000-4000-8000-000000000101',
+    'iade süresi', null, 10, 50
+  )),
+  1::bigint,
+  'the server (service role) retrieves for the widget with the same filters'
+);
+set local role authenticated;
+set local request.jwt.claims = '{"sub":"a1111111-1111-4111-8111-111111111111","session_id":"a1111111-0000-4000-8000-000000000001","email":"owner-a@example.test"}';
 select results_eq(
   $$select source_id from public.retrieve_approved_knowledge(
     'a0000000-0000-4000-8000-000000000001',

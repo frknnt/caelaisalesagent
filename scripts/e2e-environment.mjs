@@ -80,5 +80,14 @@ export function serverEnvironment(name, supabase) {
     INGESTION_WORKER_TOKEN: knowledgeWorkerTestToken,
     INGESTION_MALWARE_SCANNER_URL: "",
     INGESTION_MALWARE_SCANNER_TOKEN: "",
+    // The demo adapter: no network, no cost, answers only from sources.
+    LLM_PROVIDER: "demo",
+    LLM_MODEL: "demo-extractive-1",
+    LLM_PRICING_VERSION: "demo-free",
+    LLM_PRICE_INPUT_MICROS_PER_MILLION: "0",
+    LLM_PRICE_OUTPUT_MICROS_PER_MILLION: "0",
+    LLM_PRICE_CACHED_INPUT_MICROS_PER_MILLION: "0",
+    LLM_DAILY_BUDGET_MICROS: "0",
+    LLM_EMERGENCY_STOP: "off",
   };
 }

@@ -30,20 +30,26 @@ export interface WidgetDeps {
 const MAX_BODY_BYTES = 2048;
 const publicKeyPattern = /^cael_pk_[0-9a-f]{32}$/;
 
-type WidgetErrorCode =
+export type WidgetErrorCode =
   | "WIDGET_DENIED"
   | "WIDGET_RATE_LIMITED"
   | "WIDGET_UNAVAILABLE"
   | "WIDGET_BAD_REQUEST"
-  | "WIDGET_TOKEN_REJECTED";
+  | "WIDGET_TOKEN_REJECTED"
+  | "WIDGET_VISITOR_REQUIRED"
+  | "WIDGET_MESSAGE_INVALID"
+  | "WIDGET_ATTACHMENTS_UNSUPPORTED"
+  | "WIDGET_MESSAGE_REPEATED"
+  | "WIDGET_LIMIT_REACHED"
+  | "WIDGET_REPLY_FAILED";
 
-const baseHeaders = {
+export const baseHeaders = {
   "Cache-Control": "no-store",
   "X-Content-Type-Options": "nosniff",
   "X-Robots-Tag": "noindex",
 };
 
-function problem(
+export function problem(
   status: number,
   code: WidgetErrorCode,
   headers: Record<string, string> = {},
@@ -59,13 +65,16 @@ const unavailable = (logger: Logger, missing: string) => {
   return problem(503, "WIDGET_UNAVAILABLE");
 };
 
-const limited = (retryAfter: number) =>
+export const limited = (retryAfter: number) =>
   problem(429, "WIDGET_RATE_LIMITED", { "Retry-After": String(retryAfter) });
 
 /** Body text, or null when it is larger than any real request. */
-async function readSmallBody(request: Request): Promise<string | null> {
+export async function readSmallBody(
+  request: Request,
+  maxBytes = MAX_BODY_BYTES,
+): Promise<string | null> {
   const declared = Number(request.headers.get("content-length") ?? "0");
-  if (!Number.isFinite(declared) || declared > MAX_BODY_BYTES) return null;
+  if (!Number.isFinite(declared) || declared > maxBytes) return null;
   if (!request.body) return "";
   const reader = request.body.getReader();
   const chunks: Uint8Array[] = [];
@@ -74,7 +83,7 @@ async function readSmallBody(request: Request): Promise<string | null> {
     const { done, value } = await reader.read();
     if (done) break;
     size += value.byteLength;
-    if (size > MAX_BODY_BYTES) {
+    if (size > maxBytes) {
       await reader.cancel();
       return null;
     }
@@ -83,7 +92,7 @@ async function readSmallBody(request: Request): Promise<string | null> {
   return Buffer.concat(chunks).toString("utf8");
 }
 
-function parseRecord(text: string): Record<string, unknown> | null {
+export function parseRecord(text: string): Record<string, unknown> | null {
   try {
     const value: unknown = JSON.parse(text);
     return value !== null && typeof value === "object" && !Array.isArray(value)

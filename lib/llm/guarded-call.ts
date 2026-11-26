@@ -114,11 +114,20 @@ async function attemptCall<Effect>(
       controller.abort();
     }, input.limits.timeoutMs);
   });
+  // A late or timed-out attempt must not keep writing to the visitor's screen.
+  let streaming = true;
+  const forward = input.request.onTextDelta;
+  const request = forward
+    ? {
+        ...input.request,
+        onTextDelta: (delta: string) => {
+          if (streaming && typeof delta === "string" && delta) forward(delta);
+        },
+      }
+    : input.request;
   const call = async () => {
     if (!fitsBudget(input)) return failure("budget_exceeded");
-    return classify(
-      await input.port.complete(input.request, controller.signal),
-    );
+    return classify(await input.port.complete(request, controller.signal));
   };
   const settled = call().catch((error: unknown) => {
     if (error instanceof LlmProviderError) {
@@ -136,6 +145,7 @@ async function attemptCall<Effect>(
   try {
     return await Promise.race([settled, timeout]);
   } finally {
+    streaming = false;
     clearTimeout(timer);
   }
 }

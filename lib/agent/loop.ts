@@ -75,6 +75,8 @@ export interface AgentTurnInput {
     windowTurns?: number;
     windowChars?: number;
   };
+  /** Streaming answer text (display only; the result text is authoritative). */
+  onTextDelta?: ((delta: string) => void) | undefined;
   now?: () => Date;
   sleep?: (ms: number) => Promise<void>;
 }
@@ -168,6 +170,7 @@ export async function runAgentTurn(
           messages: [...messages],
           maxOutputTokens: input.limits?.maxOutputTokens ?? 800,
           tools: input.tools.specs(),
+          onTextDelta: input.onTextDelta,
         },
         tenant: {
           organizationId: input.turn.organizationId,

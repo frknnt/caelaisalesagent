@@ -1,0 +1,18 @@
+00_schema_contract_test.sql .... ok
+audit_events_test.sql .......... ok
+auth_rbac_context_test.sql ..... ok
+domains_rls_test.sql ........... ok
+knowledge_ingestion_test.sql ... ok
+knowledge_retrieval_test.sql ... ok
+knowledge_storage_test.sql ..... ok
+llm_call_metrics_test.sql ...... ok
+memberships_rls_test.sql ....... ok
+organizations_rls_test.sql ..... ok
+profiles_rls_test.sql .......... ok
+site_keys_test.sql ............. ok
+sites_rls_test.sql ............. ok
+widget_bootstrap_test.sql ...... ok
+widget_conversations_test.sql .. ok
+widget_runtime_test.sql ........ ok
+Files=16, Tests=422,  2 wallclock secs ( 0.10 usr  0.03 sys +  0.17 cusr  0.08 csys =  0.38 CPU)
+Result: PASS

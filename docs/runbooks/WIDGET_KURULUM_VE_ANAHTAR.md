@@ -87,3 +87,29 @@ uygulamanın kendisi loopback'teyken kabul edilir.
 Log'larda anahtar, host, IP veya token yoktur; `requestId` ile eşleştirilir.
 Retention: `select * from public.purge_widget_runtime()` (service role); henüz
 zamanlanmadı (P3.4).
+
+## Konuşma ve demo (P1.4)
+
+Karar:
+[`ADR-20261126-widget-konusma-ve-session-hafizasi.md`](../decisions/ADR-20261126-widget-konusma-ve-session-hafizasi.md).
+
+1. Panelde **Knowledge** ekranından kaynak ekleyin, işlenmesini bekleyin ve
+   **Approve** deyin. Onaysız, eski veya kapalı kaynak cevapta kullanılmaz.
+2. Sitenize loader script'ini ekleyin (yukarıdaki adımlar).
+3. Demo için sunucuda `LLM_PROVIDER=demo`, `LLM_MODEL=demo-1`,
+   `LLM_PRICING_VERSION=demo-free` ve üç `LLM_PRICE_*` değerini `0` yapın. Demo
+   sağlayıcı ücretsizdir, ağa çıkmaz ve yalnız onaylı kaynak metnini döndürür.
+   Embedding sağlayıcısı (`EMBEDDING_PROVIDER_*`) yoksa agent "kaynaklara şu an
+   erişemiyorum" der ve insana yönlendirir; uydurmaz.
+4. Ziyaretçi soru sorar; cevap akarak gelir, altında kaynak adı görünür. Konuşma
+   `messages`/`conversations` tablolarında, organizasyon üyelerine açıktır.
+
+Olaylar:
+
+- **Cevaplar handoff metni:** sağlayıcı kayıtlı değil, fiyat eksik, günlük bütçe
+  bitti veya `LLM_EMERGENCY_STOP` açık. Logda `agent.handoff` /
+  `agent.misconfigured`.
+- **Acil durdurma:** `LLM_EMERGENCY_STOP=on`. Widget açık kalır, cevaplar sabit
+  güvenli metin olur.
+- **Spam:** limitler SQL'dedir (oturum 12/dk, site 600/dk, konuşma 100 mesaj).
+  Kötüye kullanılan anahtarı iptal edin (`revoke_site_key`).

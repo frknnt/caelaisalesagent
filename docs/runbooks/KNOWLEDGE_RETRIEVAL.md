@@ -12,13 +12,13 @@
 Embedding hook isteği:
 
 ```json
-{"model":"model-id","dimensions":384,"input":["chunk text"]}
+{ "model": "model-id", "dimensions": 384, "input": ["chunk text"] }
 ```
 
 Yanıt aynı sırada ve her biri 384 finite sayı olan vektörleri taşır:
 
 ```json
-{"embeddings":[[0.01,0.02]]}
+{ "embeddings": [[0.01, 0.02]] }
 ```
 
 Eksik boyut, NaN, satır sayısı farkı, timeout veya 4xx/5xx retryable ve
@@ -42,9 +42,9 @@ POST /api/internal/ingestion/recrawl
 Authorization: Bearer <INGESTION_WORKER_TOKEN>
 ```
 
-Yanıt `{"queued":N}` döndürür. Ardından normal ingestion worker kuyruğu
-işler. Manual **Reindex now** yalnız site/URL kaynağında aynı güvenli kuyruğu
-kullanır. Aktif job varken ikinci reindex reddedilir.
+Yanıt `{"queued":N}` döndürür. Ardından normal ingestion worker kuyruğu işler.
+Manual **Reindex now** yalnız site/URL kaynağında aynı güvenli kuyruğu kullanır.
+Aktif job varken ikinci reindex reddedilir.
 
 Reindex boyunca kaynak `pending` ve retrieval dışıdır. Job `ready` olduğunda
 yeni version atomik current olur; `freshness_checked_at`, `fresh_until`,
@@ -71,6 +71,7 @@ sağlığını düzeltin, manual reindex çalıştırın, yeni citation'ları do
 - `draft`, `disabled`, `stale`, `failed`, `pending` ve eski version sonucu sıfır
   olmalıdır.
 - Her supported cevapta source id, title, URL veya page ve snippet bulunmalıdır.
-- Kaynak yoksa veya provider erişilemiyorsa citation boş, handoff açık olmalıdır.
+- Kaynak yoksa veya provider erişilemiyorsa citation boş, handoff açık
+  olmalıdır.
 - Çelişkili kaynaklarda agent birini seçmemeli; iki citation'ı taşıyıp insan
   doğrulaması istemelidir.

@@ -138,36 +138,40 @@ test("approved freshness controls fit every required viewport", async ({
   const versionId = "d2000000-0000-4000-8000-000000000001";
   const now = new Date();
   const tomorrow = new Date(now.getTime() + 86_400_000).toISOString();
-  const { error: sourceError } = await database.from("knowledge_sources").insert({
-    id: sourceId,
-    organization_id: "a0000000-0000-4000-8000-000000000001",
-    site_id: "a0000000-0000-4000-8000-000000000101",
-    source_type: "url",
-    name: "Approved refund policy",
-    source_key: "9".repeat(64),
-    canonical_url: "https://tenant-a.example.test/refunds",
-    status: "ready",
-    progress: 100,
-    created_by: "a1111111-1111-4111-8111-111111111111",
-    publication_status: "approved",
-    approved_at: now.toISOString(),
-    approved_by: "a1111111-1111-4111-8111-111111111111",
-    freshness_checked_at: now.toISOString(),
-    fresh_until: tomorrow,
-    next_recrawl_at: tomorrow,
-  });
+  const { error: sourceError } = await database
+    .from("knowledge_sources")
+    .insert({
+      id: sourceId,
+      organization_id: "a0000000-0000-4000-8000-000000000001",
+      site_id: "a0000000-0000-4000-8000-000000000101",
+      source_type: "url",
+      name: "Approved refund policy",
+      source_key: "9".repeat(64),
+      canonical_url: "https://tenant-a.example.test/refunds",
+      status: "ready",
+      progress: 100,
+      created_by: "a1111111-1111-4111-8111-111111111111",
+      publication_status: "approved",
+      approved_at: now.toISOString(),
+      approved_by: "a1111111-1111-4111-8111-111111111111",
+      freshness_checked_at: now.toISOString(),
+      fresh_until: tomorrow,
+      next_recrawl_at: tomorrow,
+    });
   expect(sourceError).toBeNull();
-  const { error: versionError } = await database.from("knowledge_versions").insert({
-    id: versionId,
-    organization_id: "a0000000-0000-4000-8000-000000000001",
-    site_id: "a0000000-0000-4000-8000-000000000101",
-    source_id: sourceId,
-    version_number: 1,
-    content_sha256: "8".repeat(64),
-    status: "ready",
-    extracted_at: now.toISOString(),
-    created_by: "a1111111-1111-4111-8111-111111111111",
-  });
+  const { error: versionError } = await database
+    .from("knowledge_versions")
+    .insert({
+      id: versionId,
+      organization_id: "a0000000-0000-4000-8000-000000000001",
+      site_id: "a0000000-0000-4000-8000-000000000101",
+      source_id: sourceId,
+      version_number: 1,
+      content_sha256: "8".repeat(64),
+      status: "ready",
+      extracted_at: now.toISOString(),
+      created_by: "a1111111-1111-4111-8111-111111111111",
+    });
   expect(versionError).toBeNull();
   const { error: activateError } = await database
     .from("knowledge_sources")
@@ -182,7 +186,9 @@ test("approved freshness controls fit every required viewport", async ({
     await expect(page.getByText("approved", { exact: true })).toBeVisible();
     await expect(page.getByText("fresh", { exact: true })).toBeVisible();
     await expect(page.getByRole("button", { name: "Disable" })).toBeVisible();
-    await expect(page.getByRole("button", { name: "Reindex now" })).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: "Reindex now" }),
+    ).toBeVisible();
     expect(
       await page.evaluate(
         () =>

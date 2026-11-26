@@ -28,8 +28,8 @@ sessizce cevap üretmek "hybrid search" iddiasını ve güvenli fallback'i bozar
    retrieval dışındadır.
 5. Her retrieval sonucu source id, source title, URL, page reference, kısa
    snippet ve fresh-until taşır. PDF extraction sayfa bazında doküman üretir.
-6. Freshness varsayılan 30 gündür. Başarılı ingestion atomik olarak yeni
-   current version'ı ve freshness penceresini açar. URL/site için due recrawl
+6. Freshness varsayılan 30 gündür. Başarılı ingestion atomik olarak yeni current
+   version'ı ve freshness penceresini açar. URL/site için due recrawl
    server-only scheduler RPC'si ve owner/admin/editor manual reindex RPC'si
    vardır.
 7. Reindex sırasında kaynak geçici olarak `pending` olur ve eski sürüm cevapta
@@ -47,8 +47,8 @@ sessizce cevap üretmek "hybrid search" iddiasını ve güvenli fallback'i bozar
   yanlış filtre tek sorguda veri sızdırabilir.
 - Draft/stale sonucu düşük skorla tutmak reddedildi: düşük skor yayın onayı veya
   güncellik kanıtı değildir.
-- Reindex boyunca eski sürümü sunmak ertelendi: blue/green source activation
-  ek durum ve hata semantiği gerektirir; fail-closed mevcut task için daha
+- Reindex boyunca eski sürümü sunmak ertelendi: blue/green source activation ek
+  durum ve hata semantiği gerektirir; fail-closed mevcut task için daha
   güvenlidir.
 - Provider yokken lexical-only cevap reddedildi: görünmez kalite düşüşü yerine
   güvenli fallback seçildi.

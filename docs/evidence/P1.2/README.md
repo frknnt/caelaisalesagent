@@ -23,8 +23,8 @@
 
 ## Uygulama ve tarayıcı kanıtı
 
-- `npm run check`: format, lint, typecheck, 492 unit/component test ve production
-  webpack build: PASS.
+- `npm run check`: format, lint, typecheck, 492 unit/component test ve
+  production webpack build: PASS.
 - İlk sandbox koşusunda ağ-izolasyon testinin kendi loopback bağlantısı OS
   `EACCES` aldı; aynı test sandbox dışında dış ağ preload guard açıkken 6/6,
   ardından tam kapıda 492/492 geçti. Beklenti değiştirilmedi.

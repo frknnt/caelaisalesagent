@@ -49,12 +49,20 @@ export default async function WorkspacePage() {
               : "Your account is not a member of a workspace. Ask an owner or admin for an invitation."}
           </p>
           {membership ? (
-            <Link
-              className="focus-ring text-link mt-6 inline-flex min-h-11 items-center"
-              href="/app/knowledge"
-            >
-              Manage knowledge sources
-            </Link>
+            <div className="mt-6 flex flex-wrap gap-5">
+              <Link
+                className="focus-ring text-link inline-flex min-h-11 items-center"
+                href="/app/inbox"
+              >
+                Open conversation inbox
+              </Link>
+              <Link
+                className="focus-ring text-link inline-flex min-h-11 items-center"
+                href="/app/knowledge"
+              >
+                Manage knowledge sources
+              </Link>
+            </div>
           ) : null}
           <form action={logout} className="mt-8">
             <SubmitButton label="Sign Out" pendingLabel="Signing out…" />

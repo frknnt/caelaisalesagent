@@ -151,6 +151,10 @@ export function createFakeConversationStore({
       reply.handoff = status === "completed" && handoff;
       return true;
     },
+    async recordToolEvents() {},
+    async requestAgentHandoff() {
+      return true;
+    },
 
     async conversation({ widgetSessionId, limit }) {
       const visitor = visitorOf(widgetSessionId);

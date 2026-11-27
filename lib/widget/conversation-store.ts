@@ -54,6 +54,7 @@ export type PostResult =
       handoff: boolean;
     }
   | { outcome: "in_progress"; conversationId: string; replyId: string | null }
+  | { outcome: "human_active"; conversationId: string; messageId: string }
   | { outcome: "rate_limited"; retryAfter: number }
   | {
       outcome: "denied" | "invalid" | "spam" | "limit_reached" | "failed";
@@ -78,6 +79,16 @@ export interface ConversationStore {
     handoff: boolean;
     promptVersion: string | null;
   }): Promise<boolean>;
+  recordToolEvents(input: {
+    conversationId: string;
+    messageId: string;
+    events: Array<{
+      toolName: string;
+      outcome: "success" | "failure";
+      summary: Record<string, string | number | boolean | null>;
+    }>;
+  }): Promise<void>;
+  requestAgentHandoff(conversationId: string): Promise<boolean>;
   conversation(input: {
     widgetSessionId: string;
     limit: number;

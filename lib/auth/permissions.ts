@@ -9,6 +9,7 @@ export const permissions = {
     "content:write",
     "content:read",
     "knowledge:manage",
+    "inbox:manage",
   ],
   admin: [
     "organization:update",
@@ -17,9 +18,10 @@ export const permissions = {
     "content:write",
     "content:read",
     "knowledge:manage",
+    "inbox:manage",
   ],
   editor: ["content:write", "content:read", "knowledge:manage"],
-  sales: ["content:read"],
+  sales: ["content:read", "inbox:manage"],
   viewer: ["content:read"],
 } as const satisfies Record<OrganizationRole, readonly string[]>;
 

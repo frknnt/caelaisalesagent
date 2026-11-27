@@ -90,6 +90,12 @@ export const supabaseConversationStore: ConversationStore = {
           conversationId: row.conversation_id,
           replyId: row.reply_id ?? null,
         };
+      case "human_active":
+        return {
+          outcome: "human_active",
+          conversationId: row.conversation_id,
+          messageId: row.message_id,
+        };
       case "rate_limited":
         return {
           outcome: "rate_limited",
@@ -114,6 +120,28 @@ export const supabaseConversationStore: ConversationStore = {
         p_citations: input.citations as unknown as Json,
         p_handoff: input.handoff,
         p_prompt_version: nullable(input.promptVersion),
+      }),
+    );
+  },
+
+  async recordToolEvents({ conversationId, messageId, events }) {
+    for (const event of events) {
+      check(
+        await createAdminClient().rpc("inbox_record_tool_event", {
+          p_conversation_id: conversationId,
+          p_message_id: messageId,
+          p_tool_name: event.toolName,
+          p_outcome: event.outcome,
+          p_summary: event.summary as unknown as Json,
+        }),
+      );
+    }
+  },
+
+  async requestAgentHandoff(conversationId) {
+    return check(
+      await createAdminClient().rpc("inbox_request_agent_handoff", {
+        p_conversation_id: conversationId,
       }),
     );
   },

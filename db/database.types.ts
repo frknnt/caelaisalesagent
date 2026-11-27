@@ -176,13 +176,151 @@ export type Database = {
           },
         ];
       };
-      conversations: {
+      conversation_notes: {
         Row: {
+          author_user_id: string | null;
+          body: string;
+          conversation_id: string;
           created_at: string;
           id: string;
+          organization_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          author_user_id?: string | null;
+          body: string;
+          conversation_id: string;
+          created_at?: string;
+          id?: string;
+          organization_id: string;
+        };
+        Update: {
+          author_user_id?: string | null;
+          body?: string;
+          conversation_id?: string;
+          created_at?: string;
+          id?: string;
+          organization_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "conversation_notes_author_user_id_fkey";
+            columns: ["author_user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "conversation_notes_organization_id_conversation_id_fkey";
+            columns: ["organization_id", "conversation_id"];
+            isOneToOne: false;
+            referencedRelation: "conversations";
+            referencedColumns: ["organization_id", "id"];
+          },
+        ];
+      };
+      conversation_reads: {
+        Row: {
+          conversation_id: string;
+          last_read_at: string;
+          organization_id: string;
+          user_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          conversation_id: string;
+          last_read_at?: string;
+          organization_id: string;
+          user_id: string;
+        };
+        Update: {
+          conversation_id?: string;
+          last_read_at?: string;
+          organization_id?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "conversation_reads_organization_id_conversation_id_fkey";
+            columns: ["organization_id", "conversation_id"];
+            isOneToOne: false;
+            referencedRelation: "conversations";
+            referencedColumns: ["organization_id", "id"];
+          },
+          {
+            foreignKeyName: "conversation_reads_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      conversation_tool_events: {
+        Row: {
+          conversation_id: string;
+          created_at: string;
+          id: string;
+          message_id: string | null;
+          organization_id: string;
+          outcome: string;
+          summary: NonNullable<Json>;
+          tool_name: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          conversation_id: string;
+          created_at?: string;
+          id?: string;
+          message_id?: string | null;
+          organization_id: string;
+          outcome: string;
+          summary?: NonNullable<Json>;
+          tool_name: string;
+        };
+        Update: {
+          conversation_id?: string;
+          created_at?: string;
+          id?: string;
+          message_id?: string | null;
+          organization_id?: string;
+          outcome?: string;
+          summary?: NonNullable<Json>;
+          tool_name?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "conversation_tool_events_message_id_fkey";
+            columns: ["message_id"];
+            isOneToOne: false;
+            referencedRelation: "messages";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "conversation_tool_events_organization_id_conversation_id_fkey";
+            columns: ["organization_id", "conversation_id"];
+            isOneToOne: false;
+            referencedRelation: "conversations";
+            referencedColumns: ["organization_id", "id"];
+          },
+        ];
+      };
+      conversations: {
+        Row: {
+          assigned_to: string | null;
+          assignment_version: number;
+          closed_at: string | null;
+          created_at: string;
+          first_human_response_at: string | null;
+          handed_off_at: string | null;
+          handoff_reason: string | null;
+          handoff_state: string;
+          id: string;
           last_message_at: string;
+          lead_context: NonNullable<Json>;
           organization_id: string;
           site_id: string;
+          sla_due_at: string | null;
           status: string;
           summarized_through: string | null;
           summary: string | null;
@@ -191,11 +329,20 @@ export type Database = {
         };
         ComputedFields: never;
         Insert: {
+          assigned_to?: string | null;
+          assignment_version?: number;
+          closed_at?: string | null;
           created_at?: string;
+          first_human_response_at?: string | null;
+          handed_off_at?: string | null;
+          handoff_reason?: string | null;
+          handoff_state?: string;
           id?: string;
           last_message_at?: string;
+          lead_context?: NonNullable<Json>;
           organization_id: string;
           site_id: string;
+          sla_due_at?: string | null;
           status?: string;
           summarized_through?: string | null;
           summary?: string | null;
@@ -203,11 +350,20 @@ export type Database = {
           visitor_message_count?: number;
         };
         Update: {
+          assigned_to?: string | null;
+          assignment_version?: number;
+          closed_at?: string | null;
           created_at?: string;
+          first_human_response_at?: string | null;
+          handed_off_at?: string | null;
+          handoff_reason?: string | null;
+          handoff_state?: string;
           id?: string;
           last_message_at?: string;
+          lead_context?: NonNullable<Json>;
           organization_id?: string;
           site_id?: string;
+          sla_due_at?: string | null;
           status?: string;
           summarized_through?: string | null;
           summary?: string | null;
@@ -215,6 +371,13 @@ export type Database = {
           visitor_message_count?: number;
         };
         Relationships: [
+          {
+            foreignKeyName: "conversations_assigned_to_fkey";
+            columns: ["assigned_to"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
           {
             foreignKeyName: "conversations_organization_id_site_id_fkey";
             columns: ["organization_id", "site_id"];
@@ -368,6 +531,74 @@ export type Database = {
             isOneToOne: false;
             referencedRelation: "sites";
             referencedColumns: ["organization_id", "id"];
+          },
+        ];
+      };
+      inbox_notification_outbox: {
+        Row: {
+          attempt_count: number;
+          claimed_at: string | null;
+          conversation_id: string;
+          created_at: string;
+          delivered_at: string | null;
+          id: string;
+          last_error_code: string | null;
+          organization_id: string;
+          recipient_email: string;
+          recipient_user_id: string | null;
+          scheduled_at: string;
+          template: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          attempt_count?: number;
+          claimed_at?: string | null;
+          conversation_id: string;
+          created_at?: string;
+          delivered_at?: string | null;
+          id?: string;
+          last_error_code?: string | null;
+          organization_id: string;
+          recipient_email: string;
+          recipient_user_id?: string | null;
+          scheduled_at?: string;
+          template: string;
+        };
+        Update: {
+          attempt_count?: number;
+          claimed_at?: string | null;
+          conversation_id?: string;
+          created_at?: string;
+          delivered_at?: string | null;
+          id?: string;
+          last_error_code?: string | null;
+          organization_id?: string;
+          recipient_email?: string;
+          recipient_user_id?: string | null;
+          scheduled_at?: string;
+          template?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "inbox_notification_outbox_organization_id_conversation_id_fkey";
+            columns: ["organization_id", "conversation_id"];
+            isOneToOne: false;
+            referencedRelation: "conversations";
+            referencedColumns: ["organization_id", "id"];
+          },
+          {
+            foreignKeyName: "inbox_notification_outbox_organization_id_fkey";
+            columns: ["organization_id"];
+            isOneToOne: false;
+            referencedRelation: "organizations";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "inbox_notification_outbox_recipient_user_id_fkey";
+            columns: ["recipient_user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
           },
         ];
       };
@@ -762,6 +993,7 @@ export type Database = {
       messages: {
         Row: {
           attempts: number;
+          author_user_id: string | null;
           body: string;
           citations: NonNullable<Json>;
           claimed_at: string | null;
@@ -775,11 +1007,13 @@ export type Database = {
           prompt_version: string | null;
           reply_to: string | null;
           role: string;
+          sender_type: string;
           status: string;
         };
         ComputedFields: never;
         Insert: {
           attempts?: number;
+          author_user_id?: string | null;
           body?: string;
           citations?: NonNullable<Json>;
           claimed_at?: string | null;
@@ -793,10 +1027,12 @@ export type Database = {
           prompt_version?: string | null;
           reply_to?: string | null;
           role: string;
+          sender_type?: string;
           status?: string;
         };
         Update: {
           attempts?: number;
+          author_user_id?: string | null;
           body?: string;
           citations?: NonNullable<Json>;
           claimed_at?: string | null;
@@ -810,9 +1046,17 @@ export type Database = {
           prompt_version?: string | null;
           reply_to?: string | null;
           role?: string;
+          sender_type?: string;
           status?: string;
         };
         Relationships: [
+          {
+            foreignKeyName: "messages_author_user_id_fkey";
+            columns: ["author_user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
           {
             foreignKeyName: "messages_organization_id_conversation_id_fkey";
             columns: ["organization_id", "conversation_id"];
@@ -1313,6 +1557,29 @@ export type Database = {
           storage_path: string;
         }[];
       };
+      claim_inbox_notifications: {
+        Args: { p_limit?: number };
+        Returns: {
+          attempt_count: number;
+          claimed_at: string | null;
+          conversation_id: string;
+          created_at: string;
+          delivered_at: string | null;
+          id: string;
+          last_error_code: string | null;
+          organization_id: string;
+          recipient_email: string;
+          recipient_user_id: string | null;
+          scheduled_at: string;
+          template: string;
+        }[];
+        SetofOptions: {
+          from: "*";
+          to: "inbox_notification_outbox";
+          isOneToOne: false;
+          isSetofReturn: true;
+        };
+      };
       claim_ingestion_job: {
         Args: { p_visibility_seconds?: number };
         Returns: {
@@ -1328,6 +1595,10 @@ export type Database = {
           source_type: string;
           version_id: string;
         }[];
+      };
+      complete_inbox_notification: {
+        Args: { p_delivered: boolean; p_error_code?: string; p_id: string };
+        Returns: boolean;
       };
       complete_ingestion_job: {
         Args: { p_job_id: string; p_message_id: number };
@@ -1441,6 +1712,168 @@ export type Database = {
           organization_slug: string;
           role: string;
         }[];
+      };
+      inbox_add_note: {
+        Args: { p_body: string; p_conversation_id: string };
+        Returns: {
+          author_user_id: string | null;
+          body: string;
+          conversation_id: string;
+          created_at: string;
+          id: string;
+          organization_id: string;
+        };
+        SetofOptions: {
+          from: "*";
+          to: "conversation_notes";
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
+      inbox_close_conversation: {
+        Args: { p_conversation_id: string; p_expected_version: number };
+        Returns: {
+          assigned_to: string | null;
+          assignment_version: number;
+          closed_at: string | null;
+          created_at: string;
+          first_human_response_at: string | null;
+          handed_off_at: string | null;
+          handoff_reason: string | null;
+          handoff_state: string;
+          id: string;
+          last_message_at: string;
+          lead_context: NonNullable<Json>;
+          organization_id: string;
+          site_id: string;
+          sla_due_at: string | null;
+          status: string;
+          summarized_through: string | null;
+          summary: string | null;
+          visitor_id: string;
+          visitor_message_count: number;
+        };
+        SetofOptions: {
+          from: "*";
+          to: "conversations";
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
+      inbox_mark_read: {
+        Args: { p_conversation_id: string };
+        Returns: undefined;
+      };
+      inbox_record_tool_event: {
+        Args: {
+          p_conversation_id: string;
+          p_message_id: string;
+          p_outcome: string;
+          p_summary: Json;
+          p_tool_name: string;
+        };
+        Returns: boolean;
+      };
+      inbox_release_to_bot: {
+        Args: { p_conversation_id: string; p_expected_version: number };
+        Returns: {
+          assigned_to: string | null;
+          assignment_version: number;
+          closed_at: string | null;
+          created_at: string;
+          first_human_response_at: string | null;
+          handed_off_at: string | null;
+          handoff_reason: string | null;
+          handoff_state: string;
+          id: string;
+          last_message_at: string;
+          lead_context: NonNullable<Json>;
+          organization_id: string;
+          site_id: string;
+          sla_due_at: string | null;
+          status: string;
+          summarized_through: string | null;
+          summary: string | null;
+          visitor_id: string;
+          visitor_message_count: number;
+        };
+        SetofOptions: {
+          from: "*";
+          to: "conversations";
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
+      inbox_request_agent_handoff: {
+        Args: { p_conversation_id: string };
+        Returns: boolean;
+      };
+      inbox_send_reply: {
+        Args: { p_body: string; p_conversation_id: string };
+        Returns: {
+          attempts: number;
+          author_user_id: string | null;
+          body: string;
+          citations: NonNullable<Json>;
+          claimed_at: string | null;
+          client_message_id: string | null;
+          conversation_id: string;
+          created_at: string;
+          feedback: number | null;
+          handoff: boolean;
+          id: string;
+          organization_id: string;
+          prompt_version: string | null;
+          reply_to: string | null;
+          role: string;
+          sender_type: string;
+          status: string;
+        };
+        SetofOptions: {
+          from: "*";
+          to: "messages";
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
+      };
+      inbox_set_lead_context: {
+        Args: { p_context: Json; p_conversation_id: string };
+        Returns: boolean;
+      };
+      inbox_takeover: {
+        Args: {
+          p_conversation_id: string;
+          p_expected_version: number;
+          p_reason: string;
+          p_sla_minutes?: number;
+        };
+        Returns: {
+          assigned_to: string | null;
+          assignment_version: number;
+          closed_at: string | null;
+          created_at: string;
+          first_human_response_at: string | null;
+          handed_off_at: string | null;
+          handoff_reason: string | null;
+          handoff_state: string;
+          id: string;
+          last_message_at: string;
+          lead_context: NonNullable<Json>;
+          organization_id: string;
+          site_id: string;
+          sla_due_at: string | null;
+          status: string;
+          summarized_through: string | null;
+          summary: string | null;
+          visitor_id: string;
+          visitor_message_count: number;
+        };
+        SetofOptions: {
+          from: "*";
+          to: "conversations";
+          isOneToOne: true;
+          isSetofReturn: false;
+        };
       };
       mark_knowledge_file_deleted: {
         Args: { p_document_id: string };

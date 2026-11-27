@@ -329,6 +329,11 @@ export async function handlePostMessage(
         { status: "in_progress" },
         { status: 202, headers: baseHeaders },
       );
+    case "human_active":
+      return Response.json(
+        { status: "human_active", messageId: posted.messageId },
+        { status: 202, headers: baseHeaders },
+      );
     case "duplicate":
       return new Response(
         new Blob([
@@ -412,7 +417,7 @@ export async function handlePostMessage(
           onTextDelta: (delta) => send("delta", { text: delta }),
         });
         const { citations, handoff } = citationsOf(result);
-        await deps.conversations.completeReply({
+        const stored = await deps.conversations.completeReply({
           replyId,
           status: "completed",
           body: result.text,
@@ -420,6 +425,44 @@ export async function handlePostMessage(
           handoff,
           promptVersion: result.promptVersion,
         });
+        if (!stored) {
+          logger.info("widget.reply_suppressed_for_handoff", { replyId });
+          send("error", { code: "WIDGET_HUMAN_ACTIVE" });
+          return;
+        }
+        const toolOutputs =
+          result.status === "answered" ? result.toolOutputs : [];
+        await deps.conversations.recordToolEvents({
+          conversationId: posted.conversationId,
+          messageId: replyId,
+          events: toolOutputs.map(({ tool, output }) => {
+            const value =
+              output && typeof output === "object"
+                ? (output as {
+                    status?: unknown;
+                    handoff?: unknown;
+                    citations?: unknown;
+                  })
+                : {};
+            return {
+              toolName: tool,
+              outcome: "success" as const,
+              summary: {
+                status:
+                  typeof value.status === "string"
+                    ? value.status.slice(0, 63)
+                    : null,
+                handoff: value.handoff === true,
+                citation_count: Array.isArray(value.citations)
+                  ? value.citations.length
+                  : 0,
+              },
+            };
+          }),
+        });
+        if (handoff) {
+          await deps.conversations.requestAgentHandoff(posted.conversationId);
+        }
         logger.info("widget.reply_completed", {
           status: result.status,
           steps: result.steps,

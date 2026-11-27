@@ -6,8 +6,8 @@ Bu dosya task durumlarinin, `NEXT_TASK` alaninin ve degismez uygulama kurallarin
 
 - Aktif task: `P1.1`
 - NEXT_TASK: `P1.1` (Demo kapisinin P1.4 testleri yesil; kapi P1.1 kapanis kanitini bekliyor)
-- Son tamamlanan task: `P1.4`
-- Release kapisi: Guvenli temel / Faz 0
+- Son tamamlanan task: `P1.5`
+- Release kapisi: Demo (P1.1 kapanis kanitini bekliyor)
 - Baslangic tarihi: 2026-11-20
 
 ## Urun siniri
@@ -62,7 +62,7 @@ Bir task blocked ise yalniz bagimliligi tamamlanmis baska bir task'a gecilebilir
 | P1.2 | F1 - Agent | Retrieval, kaynak gosterme ve freshness | DONE | 15 | 2026-11-26; tenant/site filtreli hybrid retrieval, kanit sozlesmesi, kaynak yasam dongusu ve freshness/reindex akislari; 492 unit+component, 370 pgTAP ve P1.2 E2E kapilari yesil |
 | P1.3 | F1 - Agent | LLM provider adaptoru ve agent dongusu | DONE | 16 | 2026-11-26; provider-bagimsiz port/config/registry, retry+circuit breaker, surumlu prompt, dogrulanan tool dongusu, gunluk butce ve emergency stop; 518 unit+component (26 yeni agent testi) ve build yesil |
 | P1.4 | F1 - Agent | Widget konusmasi ve session hafizasi | DONE | 17 | 2026-11-26; anonim kimlik, konusma/mesaj, idempotent tek cevap, SSE streaming, retry, feedback, onerilen sorular, consent-aware hafiza, deterministik ozet, spam/limit ve kaynakli demo agent; 537 unit+component, sifir DB 422 pgTAP, tam E2E 177/177 ve failure-proof yesil |
-| P1.5 | F1 - Agent | Inbox, insan devri ve canli takip | NOT STARTED | 18 | - |
+| P1.5 | F1 - Agent | Inbox, insan devri ve canli takip | DONE | 18 | 2026-11-27; atomik devralma ve bot susturma, baglamli canli inbox, SLA/e-posta outbox'i; 543 unit+component, sifir DB 458 pgTAP ve P1.5 E2E yesil |
 | P1.6 | F1 - Agent | Agent ayarlari, preview ve versioning | NOT STARTED | 19 | - |
 | P2.1 | F2 - Conversion Studio | Conversion schema ve form editor | NOT STARTED | 20 | - |
 | P2.2 | F2 - Conversion Studio | Dort renderer: chat, inline, modal, standalone | NOT STARTED | 21 | - |
